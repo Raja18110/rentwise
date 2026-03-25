@@ -1,7 +1,24 @@
 // app/dashboard/layout.tsx
 import Sidebar from "../components/Sidebar"
+import { SessionProvider } from "next-auth/react"
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+    children,
+}: {
+    children: React.ReactNode
+}) {
+    return (
+        <html>
+            <body>
+                <SessionProvider>
+                    {children}
+                </SessionProvider>
+            </body>
+        </html>
+    )
+}
+
+export function Layout({ children }: { children: React.ReactNode }) {
     return (
         <div className="flex">
             <Sidebar />
