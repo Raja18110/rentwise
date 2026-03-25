@@ -7,16 +7,18 @@ export default function RegisterPage() {
     const [email, setEmail] = useState("")
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
+    const [role, setRole] = useState("tenant")
     const [otp, setOtp] = useState("")
     const [step, setStep] = useState(1)
 
     // STEP 1 → Send OTP
     const sendOtp = async () => {
         try {
-            await axios.post("http://localhost:8000/auth/register", {
+            await axios.post("http://127.0.0.1:8000/auth/register", {
                 email,
                 username,
-                password
+                password,
+                role
             })
             alert("OTP sent to email")
             setStep(2)
@@ -33,6 +35,7 @@ export default function RegisterPage() {
                 username,
                 password,
                 otp
+
             })
             alert("Registration successful")
         } catch (err) {
@@ -70,6 +73,13 @@ export default function RegisterPage() {
                             className="border p-2 w-full mb-2"
                             onChange={(e) => setPassword(e.target.value)}
                         />
+                        <select
+                            onChange={(e) => setRole(e.target.value)}
+                            className="border p-2 w-full mb-2"
+                        >
+                            <option value="tenant">Tenant</option>
+                            <option value="landlord">Landlord</option>
+                        </select>
 
                         <button
                             onClick={sendOtp}
