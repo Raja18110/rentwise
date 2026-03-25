@@ -3,40 +3,38 @@
 import { useState } from "react"
 import axios from "axios"
 import { useRouter } from "next/navigation"
-const router = useRouter()
-
-// after login success:
-router.push("/dashboard")
 
 export default function LoginPage() {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
 
+    const router = useRouter() // inside component
+
     const handleLogin = async () => {
         try {
-            const res = await axios.post("http://localhost:8000/auth/login", {
-                email: email,
-                password: password
+            const res = await axios.post("http://127.0.0.1:8000/auth/login", {
+                email,
+                password
             })
 
-            console.log(res.data)
-
-            // Save token & role
+            // Save token + role
             localStorage.setItem("token", res.data.token)
             localStorage.setItem("role", res.data.role)
 
             alert("Login Successful")
 
+            router.push("/dashboard") // correct usage
+
         } catch (err) {
-            alert("Login Failed")
             console.error(err)
+            alert("Login Failed")
         }
     }
 
     return (
         <div className="flex h-screen items-center justify-center bg-gray-100">
 
-            <div className="bg-white p-6 rounded-xl shadow-md w-80">
+            <div className="bg-black p-6 rounded-xl shadow-md w-80">
                 <h1 className="text-xl font-bold mb-4 text-center">
                     Login
                 </h1>
