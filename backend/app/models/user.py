@@ -10,3 +10,4 @@ class User(Base):
     username = Column(String)
     password_hash = Column(String)
     is_verified = Column(Boolean, default=False)
+    role = Column(String, default="tenant") 
