@@ -1,6 +1,8 @@
-# routes/payment.py
 from fastapi import APIRouter
-router=APIRouter(prefix="/pay")
+from app.services.payment_service import create_order
 
-@router.post("/")
-def pay(): return {"status":"success"}
+router = APIRouter(prefix="/payment")
+
+@router.post("/create-order")
+def order(amount: float):
+    return create_order(amount)
