@@ -13,6 +13,7 @@ class RegisterRequest(BaseModel):
     email: str
     username: str
     password: str
+    role: str
 
 @router.post("/register")
 def register(data: RegisterRequest):
@@ -22,6 +23,7 @@ class VerifyRequest(BaseModel):
     username: str
     password: str
     otp: str
+    role: str
 
 
 @router.post("/verify-register")

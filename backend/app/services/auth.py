@@ -6,9 +6,14 @@ from app.utils.jwt import *
 
 db=SessionLocal()
 
-def register(email, username, password):
-    user=User(email=email, username=username,
-              password_hash=hash_password(password))
+def register(email, username, password, role="tenant"):
+    user = User(
+        email=email,
+        username=username,
+        password_hash=hash_password(password),
+        role=role
+    )
+
     db.add(user)
     db.commit()
     return user
