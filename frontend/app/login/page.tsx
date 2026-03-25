@@ -3,6 +3,7 @@
 import { useState } from "react"
 import axios from "axios"
 import { useRouter } from "next/navigation"
+import { signIn } from "next-auth/react"
 
 export default function LoginPage() {
     const [email, setEmail] = useState("")
@@ -58,6 +59,12 @@ export default function LoginPage() {
                     className="bg-blue-500 text-white w-full p-2 rounded"
                 >
                     Login
+                </button>
+                <button
+                    onClick={() => signIn("google")}
+                    className="bg-red-500 text-white w-full p-2 mt-3 rounded"
+                >
+                    Login with Google
                 </button>
             </div>
 
