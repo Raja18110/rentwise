@@ -17,4 +17,7 @@ def login(email,password):
     user=db.query(User).filter(User.email==email).first()
     if not user or not verify_password(password,user.password_hash):
         return None
-    return create_token({"id":user.id})
+
+    token=create_token({"id":user.id,"role":user.role})
+
+    return {"token":token,"role":user.role}
