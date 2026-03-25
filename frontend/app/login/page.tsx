@@ -2,6 +2,11 @@
 
 import { useState } from "react"
 import axios from "axios"
+import { useRouter } from "next/navigation"
+const router = useRouter()
+
+// after login success:
+router.push("/dashboard")
 
 export default function LoginPage() {
     const [email, setEmail] = useState("")
