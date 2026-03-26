@@ -12,4 +12,3 @@ engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(bind=engine)
 
 Base = declarative_base()
-print("DB URL:", DATABASE_URL)
