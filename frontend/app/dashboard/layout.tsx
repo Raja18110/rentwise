@@ -1,19 +1,33 @@
-export default function DashboardLayout({
-    children,
-}: {
-    children: React.ReactNode
-}) {
+"use client"
+
+import { useEffect } from "react"
+import { useRouter } from "next/navigation"
+import Navbar from "../../components/Navbar"
+import Sidebar from "../../components/Sidebar"
+
+export default function DashboardLayout({ children }: any) {
+    const router = useRouter()
+
+    useEffect(() => {
+        const token = localStorage.getItem("token")
+
+        if (!token) {
+            router.push("/login")
+        }
+    }, [])
+
     return (
         <div className="flex">
-            {/* Sidebar (optional) */}
-            <div className="w-64 bg-black text-white p-4">
-                Dashboard Menu
-            </div>
+
+            {/* Sidebar */}
+            <Sidebar />
 
             {/* Main Content */}
-            <div className="flex-1 p-6 bg-gray-100 min-h-screen">
-                {children}
+            <div className="flex-1">
+                <Navbar />
+                <div className="p-6">{children}</div>
             </div>
+
         </div>
     )
 }

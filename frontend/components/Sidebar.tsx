@@ -4,29 +4,18 @@ import Link from "next/link"
 
 export default function Sidebar() {
     return (
-        <div className="w-64 h-screen bg-gradient-to-b from-black to-gray-800 text-white p-6">
+        <div className="w-64 bg-black text-white p-6 min-h-screen">
 
-            <h1 className="text-2xl font-bold mb-8">RentWise</h1>
+            <h2 className="text-xl mb-6">RentWise</h2>
 
-            <nav className="space-y-4">
+            <ul className="space-y-3">
+                <li><Link href="/dashboard">Dashboard</Link></li>
+                <li><Link href="/lease">Lease</Link></li>
+                <li><Link href="/chat">Chat</Link></li>
+                <li><Link href="/payments">Payments</Link></li>
+                <li><Link href="/requests">Requests</Link></li>
+            </ul>
 
-                <Link href="/dashboard" className="block hover:text-blue-400">
-                    Dashboard
-                </Link>
-
-                <Link href="/payments" className="block hover:text-blue-400">
-                    Payments
-                </Link>
-
-                <Link href="/requests" className="block hover:text-blue-400">
-                    Requests
-                </Link>
-
-                <Link href="/chat" className="block hover:text-blue-400">
-                    Messages
-                </Link>
-
-            </nav>
         </div>
     )
 }

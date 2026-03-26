@@ -55,11 +55,11 @@ export default function Home() {
             transition={{ delay: 0.5 }}
             className="flex gap-4"
           >
-            <Link href="/dashboard" className="bg-blue-600 text-white px-6 py-3 rounded-xl shadow-lg hover:scale-105 transition">
-              Go to Dashboard
+            <Link href="/login" className="bg-blue-600 text-white px-6 py-3 rounded-xl shadow-lg hover:scale-105 transition">
+              login here
             </Link>
 
-            <Link href="/register" className="border px-6 py-3 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+            <Link href="/register" className="border px-6 py-3 rounded-xl hover:bg-blue-100 dark:hover:bg-gray-800 transition">
               Create Account
             </Link>
           </motion.div>
