@@ -33,14 +33,17 @@ export default function Payments() {
 
     return (
         <div className="p-6">
-            <h1 className="text-xl font-bold mb-4">Rent Payment</h1>
 
-            <button
-                onClick={handlePayment}
-                className="bg-green-600 text-white px-4 py-2 rounded"
-            >
-                Pay Rent ₹5000
-            </button>
+            <div className="glass p-6">
+
+                <h2 className="text-xl mb-4">Rent Payment</h2>
+
+                <button className="btn w-full">
+                    Pay ₹5000
+                </button>
+
+            </div>
+
         </div>
     )
 }

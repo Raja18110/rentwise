@@ -3,13 +3,14 @@
 import { useState } from "react"
 import axios from "axios"
 import { useRouter } from "next/navigation"
-import { signIn } from "next-auth/react"
+import { GoogleLogin } from "@react-oauth/google"
 
 export default function LoginPage() {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
-    const router = useRouter() // inside component
+    const router = useRouter()
 
+    // 🔐 Normal login
     const handleLogin = async () => {
         try {
             const res = await axios.post("http://127.0.0.1:8000/auth/login", {
@@ -17,24 +18,43 @@ export default function LoginPage() {
                 password
             })
 
-            // Save token + role
             localStorage.setItem("token", res.data.token)
             localStorage.setItem("role", res.data.role)
 
             alert("Login Successful")
-
-            router.push("/dashboard") // correct usage
+            router.push("/dashboard")
 
         } catch (err) {
-            console.error(err)
             alert("Login Failed")
+        }
+    }
+
+    // 🔥 Google login (NEW)
+    const handleGoogleLogin = async (credentialResponse: any) => {
+        try {
+            const res = await axios.post(
+                "http://127.0.0.1:8000/auth/google",
+                {
+                    token: credentialResponse.credential
+                }
+            )
+
+            localStorage.setItem("token", res.data.token)
+            localStorage.setItem("role", res.data.role)
+
+            alert("Google Login Success")
+            router.push("/dashboard")
+
+        } catch (err) {
+            alert("Google Login Failed")
         }
     }
 
     return (
         <div className="flex h-screen items-center justify-center bg-gray-100">
 
-            <div className="bg-black p-6 rounded-xl shadow-md w-80">
+            <div className="bg-white p-6 rounded-xl shadow-md w-80">
+
                 <h1 className="text-xl font-bold mb-4 text-center">
                     Login
                 </h1>
@@ -59,12 +79,12 @@ export default function LoginPage() {
                 >
                     Login
                 </button>
-                <button
-                    onClick={() => signIn("google")}
-                    className="bg-red-500 text-white w-full p-2 mt-3 rounded"
-                >
-                    Login with Google
-                </button>
+
+                {/* 🔥 GOOGLE LOGIN BUTTON */}
+                <div className="mt-4 flex justify-center">
+                    <GoogleLogin onSuccess={handleGoogleLogin} />
+                </div>
+
             </div>
 
         </div>

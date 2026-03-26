@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { motion } from "framer-motion"
 
 export default function DashboardPage() {
     const [role, setRole] = useState("")
@@ -40,11 +41,14 @@ function TenantDashboard() {
         </div>
     )
 }
-
-function Card({ title }: { title: string }) {
+function Card({ title, value }: any) {
     return (
-        <div className="bg-white rounded-xl shadow-lg p-4 hover:scale-105 transition">
-            <h2 className="font-semibold">{title}</h2>
-        </div>
+        <motion.div
+            whileHover={{ scale: 1.05 }}
+            className="bg-white p-6 rounded-xl shadow-md"
+        >
+            <h2 className="text-gray-500">{title}</h2>
+            <p className="text-2xl font-bold">{value}</p>
+        </motion.div>
     )
 }

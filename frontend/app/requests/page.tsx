@@ -20,11 +20,18 @@ export default function Requests() {
 
     return (
         <div className="p-6">
-            <h1 className="text-xl font-bold mb-4">
-                Maintenance Request
-            </h1>
 
-            <input type="file" onChange={handleUpload} />
+            <div className="glass p-6">
+
+                <h2 className="text-xl mb-4">Maintenance Request</h2>
+
+                <input className="input mb-3" placeholder="Title" />
+                <textarea className="input mb-3" placeholder="Description" />
+
+                <button className="btn w-full">Submit</button>
+
+            </div>
+
         </div>
     )
 }

@@ -1,18 +1,16 @@
-// app/dashboard/layout.tsx
-import Sidebar from "./components/Sidebar"
-import { SessionProvider } from "next-auth/react"
+import Sidebar from "../components/Sidebar"
+import { GoogleOAuthProvider } from "@react-oauth/google"
+import Navbar from "../components/Navbar"
+import "./globals.css"
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: any) {
   return (
     <html>
       <body>
-        <SessionProvider>
+        <GoogleOAuthProvider clientId="YOUR_GOOGLE_CLIENT_ID">
+          <Navbar />
           {children}
-        </SessionProvider>
+        </GoogleOAuthProvider>
       </body>
     </html>
   )
