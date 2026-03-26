@@ -1,17 +1,23 @@
-# websocket/chat.py
-from fastapi import WebSocket, APIRouter
+from fastapi import APIRouter, WebSocket
 
-router=APIRouter()
-clients=[]
+router = APIRouter()
+
+# Store connected users
+clients = []
+
 
 @router.websocket("/ws")
-async def ws(ws:WebSocket):
-    await ws.accept()
-    clients.append(ws)
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()
+    clients.append(websocket)
+
     try:
         while True:
-            msg=await ws.receive_text()
-            for c in clients:
-                await c.send_text(msg)
+            data = await websocket.receive_text()
+
+            # Broadcast message to all connected clients
+            for client in clients:
+                await client.send_text(data)
+
     except:
-        clients.remove(ws)
+        clients.remove(websocket)

@@ -1,6 +1,6 @@
 # controllers/auth_controller.py
 from app.services.auth import login, register
-from app.services.otp import send_otp, verify_otp
+from backend.app.services.otp_service import send_otp, verify_otp
 
 def register_ctrl(email, username, password, role):
     send_otp(email)

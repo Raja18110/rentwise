@@ -1,12 +1,17 @@
-# app/services/auth_service.py
 from app.db import SessionLocal
 from app.models.user import User
-from app.utils.hash import *
-from app.utils.jwt import *
+from app.utils.hash import hash_password, verify_password
+from app.utils.jwt import create_token
 
-db=SessionLocal()
+db = SessionLocal()
 
-def register(email, username, password, role="tenant"):
+# ✅ REGISTER
+def register_user(email, username, password, role):
+    existing = db.query(User).filter(User.email == email).first()
+
+    if existing:
+        return {"error": "User already exists"}
+
     user = User(
         email=email,
         username=username,
@@ -16,13 +21,26 @@ def register(email, username, password, role="tenant"):
 
     db.add(user)
     db.commit()
-    return user
 
-def login(email,password):
-    user=db.query(User).filter(User.email==email).first()
-    if not user or not verify_password(password,user.password_hash):
-        return None
+    return {"msg": "User registered successfully"}
 
-    token=create_token({"id":user.id,"role":user.role})
 
-    return {"token":token,"role":user.role}
+# ✅ LOGIN
+def login_user(email, password):
+    user = db.query(User).filter(User.email == email).first()
+
+    if not user:
+        return {"error": "User not found"}
+
+    if not verify_password(password, user.password_hash):
+        return {"error": "Wrong password"}
+
+    token = create_token({
+        "email": user.email,
+        "role": user.role
+    })
+
+    return {
+        "token": token,
+        "role": user.role
+    }
