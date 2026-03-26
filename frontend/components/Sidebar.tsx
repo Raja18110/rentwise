@@ -14,6 +14,7 @@ export default function Sidebar() {
                 <li><Link href="/chat">Chat</Link></li>
                 <li><Link href="/payments">Payments</Link></li>
                 <li><Link href="/requests">Requests</Link></li>
+                <li><Link href="/dashboard/settings">Settings</Link></li>
             </ul>
 
         </div>

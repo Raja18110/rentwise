@@ -2,113 +2,79 @@
 
 import { useState } from "react"
 import axios from "axios"
+import { useRouter } from "next/navigation"
 
 export default function RegisterPage() {
     const [email, setEmail] = useState("")
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
     const [role, setRole] = useState("tenant")
-    const [otp, setOtp] = useState("")
-    const [step, setStep] = useState(1)
 
-    // STEP 1 → Send OTP
-    const sendOtp = async () => {
+    const router = useRouter()
+
+    const handleRegister = async () => {
         try {
             await axios.post("http://127.0.0.1:8000/auth/register", {
                 email,
                 username,
                 password,
-                role
+                role,
             })
-            alert("OTP sent to email")
-            setStep(2)
-        } catch (err) {
-            alert("Error sending OTP")
-        }
-    }
 
-    // STEP 2 → Verify OTP
-    const verifyOtp = async () => {
-        try {
-            await axios.post("http://localhost:8000/auth/verify-register", {
-                email,
-                username,
-                password,
-                otp
-
-            })
             alert("Registration successful")
+
+            router.push("/login")
+
         } catch (err) {
-            alert("Invalid OTP")
+            alert("Registration failed")
         }
     }
 
     return (
-        <div className="flex h-screen items-center justify-center bg-gray-100">
+        <div className="flex h-screen items-center justify-center">
 
-            <div className="bg-white p-6 rounded-xl shadow-md w-80">
+            <div className="glass p-8 w-96">
 
                 <h1 className="text-xl font-bold mb-4 text-center">
                     Register
                 </h1>
 
-                {/* STEP 1 FORM */}
-                {step === 1 && (
-                    <>
-                        <input
-                            placeholder="Email"
-                            className="border p-2 w-full mb-2"
-                            onChange={(e) => setEmail(e.target.value)}
-                        />
+                <input
+                    placeholder="Email"
+                    className="input mb-3"
+                    onChange={(e) => setEmail(e.target.value)}
+                />
 
-                        <input
-                            placeholder="Username"
-                            className="border p-2 w-full mb-2"
-                            onChange={(e) => setUsername(e.target.value)}
-                        />
+                <input
+                    placeholder="Username"
+                    className="input mb-3"
+                    onChange={(e) => setUsername(e.target.value)}
+                />
 
-                        <input
-                            type="password"
-                            placeholder="Password"
-                            className="border p-2 w-full mb-2"
-                            onChange={(e) => setPassword(e.target.value)}
-                        />
-                        <select
-                            onChange={(e) => setRole(e.target.value)}
-                            className="border p-2 w-full mb-2"
-                        >
-                            <option value="tenant">Tenant</option>
-                            <option value="landlord">Landlord</option>
-                        </select>
+                <input
+                    type="password"
+                    placeholder="Password"
+                    className="input mb-3"
+                    onChange={(e) => setPassword(e.target.value)}
+                />
 
-                        <button
-                            onClick={sendOtp}
-                            className="bg-blue-500 text-white w-full p-2 rounded"
-                        >
-                            Send OTP
-                        </button>
-                    </>
-                )}
+                <select
+                    onChange={(e) => setRole(e.target.value)}
+                    className="input mb-3"
+                >
+                    <option value="tenant">Tenant</option>
+                    <option value="landlord">Landlord</option>
+                </select>
 
-                {/* STEP 2 FORM */}
-                {step === 2 && (
-                    <>
-                        <input
-                            placeholder="Enter OTP"
-                            className="border p-2 w-full mb-2"
-                            onChange={(e) => setOtp(e.target.value)}
-                        />
-
-                        <button
-                            onClick={verifyOtp}
-                            className="bg-green-500 text-white w-full p-2 rounded"
-                        >
-                            Verify & Register
-                        </button>
-                    </>
-                )}
+                <button
+                    onClick={handleRegister}
+                    className="btn w-full"
+                >
+                    Register
+                </button>
 
             </div>
+
         </div>
     )
 }

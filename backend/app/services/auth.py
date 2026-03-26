@@ -6,7 +6,7 @@ from app.utils.jwt import create_token
 db = SessionLocal()
 
 # ✅ REGISTER
-def register_user(email, username, password, role):
+def register_user(db, email, username, password, role):
     existing = db.query(User).filter(User.email == email).first()
 
     if existing:
@@ -26,7 +26,7 @@ def register_user(email, username, password, role):
 
 
 # ✅ LOGIN
-def login_user(email, password):
+def login_user(db, email, password):
     user = db.query(User).filter(User.email == email).first()
 
     if not user:
