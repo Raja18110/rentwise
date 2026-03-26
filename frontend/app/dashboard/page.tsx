@@ -6,17 +6,17 @@ export default function DashboardPage() {
     const [role, setRole] = useState("")
 
     useEffect(() => {
-        const storedRole = localStorage.getItem("role")
-        setRole(storedRole || "")
+        const r = localStorage.getItem("role")
+        setRole(r || "")
     }, [])
 
-    // 🔥 ROLE-BASED RENDERING HERE
     if (role === "landlord") {
-        return <LandlordDashboard />
-    } else {
-        return <TenantDashboard />
+        return <h1>Landlord Dashboard</h1>
     }
+
+    return <h1>Tenant Dashboard</h1>
 }
+
 
 function LandlordDashboard() {
     return (
