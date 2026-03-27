@@ -2,7 +2,8 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.db import get_db
 from pydantic import BaseModel
-from app.services.payment_service import create_payment, get_payments
+from app.services.payment import create_payment, get_payments
+from app.services.notification import create_notification
 
 router = APIRouter(prefix="/payment")
 
@@ -15,6 +16,8 @@ class PaymentSchema(BaseModel):
 
 @router.post("/")
 def pay(data: PaymentSchema, db: Session = Depends(get_db)):
+    create_notification(db, data.email, f"Payment of ${data.amount} created.")
+
     return create_payment(db, data.email, data.amount, data.type)
 
 

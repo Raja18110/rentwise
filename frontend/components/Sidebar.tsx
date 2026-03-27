@@ -1,21 +1,47 @@
 "use client"
 
 import Link from "next/link"
+import { motion } from "framer-motion"
 
 export default function Sidebar() {
     return (
-        <div className="w-64 bg-black text-white p-6 min-h-screen">
+        <div className="w-64 min-h-screen p-6 glass flex flex-col justify-between">
 
-            <h2 className="text-xl mb-6">RentWise</h2>
+            {/* Logo */}
+            <h2 className="text-2xl font-bold mb-8 tracking-wide">
+                RentWise
+            </h2>
 
-            <ul className="space-y-3">
-                <li><Link href="/dashboard">Dashboard</Link></li>
-                <li><Link href="/lease">Lease</Link></li>
-                <li><Link href="/chat">Chat</Link></li>
-                <li><Link href="/payments">Payments</Link></li>
-                <li><Link href="/requests">Requests</Link></li>
-                <li><Link href="/dashboard/settings">Settings</Link></li>
+            {/* Menu */}
+            <ul className="space-y-4">
+
+                {[
+                    { name: "Dashboard", path: "/dashboard" },
+                    { name: "Lease", path: "/dashboard/lease" },
+                    { name: "Chat", path: "/chat" },
+                    { name: "Payments", path: "/payments" },
+                    { name: "Requests", path: "/requests" },
+                    { name: "Settings", path: "/dashboard/settings" }
+                ].map((item, i) => (
+
+                    <motion.li
+                        key={i}
+                        whileHover={{ scale: 1.05, x: 5 }}
+                        className="p-2 rounded-lg hover:bg-white/10 transition"
+                    >
+                        <Link href={item.path}>
+                            {item.name}
+                        </Link>
+                    </motion.li>
+
+                ))}
+
             </ul>
+
+            {/* Footer */}
+            <p className="text-sm text-gray-400 mt-10">
+                © RentWise
+            </p>
 
         </div>
     )

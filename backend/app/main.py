@@ -10,7 +10,8 @@ from app.routes import payment
 from app.websocket import chat
 from app.routes import google_routes
 from app.models import payment 
-from app.routes import payment
+from app.models import notification
+from app.routes import notification
 
 app = FastAPI()
 app.include_router(auth_routes.router)
@@ -20,6 +21,7 @@ app.include_router(upload.router)
 app.include_router(payment.router)
 app.include_router(chat.router)
 app.include_router(google_routes.router)
+app.include_router(notification.router)
 
 app.add_middleware(
     CORSMiddleware,

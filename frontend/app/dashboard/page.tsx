@@ -9,6 +9,7 @@ export default function DashboardPage() {
     const [user, setUser] = useState<any>(null)
     const [leases, setLeases] = useState([])
     const [payments, setPayments] = useState([])
+    const [notifications, setNotifications] = useState<any[]>([])
 
     useEffect(() => {
         const u = getUser()
@@ -19,8 +20,19 @@ export default function DashboardPage() {
             .catch(err => console.error(err))
 
         axios.get("http://127.0.0.1:8000/payment")
-            .then(res => setPayments(res.data))
+            .then(res => {
+                if (u) {
+                    const filtered = res.data.filter(
+                        (p: any) => p.email === u.email
+                    )
+                    setPayments(filtered)
+                }
+            })
             .catch(err => console.error(err))
+        axios.get("http://127.0.0.1:8000/notification/" + user.email)
+            .then(res => setNotifications(res.data))
+            .catch(err => console.error(err))
+
 
     }, [])
 
@@ -51,6 +63,33 @@ export default function DashboardPage() {
                     ))
                 )}
             </div>
+            <div className="glass p-4 mb-6">
+                <h2 className="mb-2">Notifications 🔔</h2>
+
+                {notifications.length === 0 ? (
+                    <p>No notifications</p>
+                ) : (
+                    notifications.map((n: any) => (
+                        <div key={n.id} className="flex justify-between mb-2">
+
+                            <span>{n.message}</span>
+
+                            {n.status === "unread" && (
+                                <button
+                                    onClick={async () => {
+                                        await axios.put(`http://127.0.0.1:8000/notification/read/${n.id}`)
+                                        window.location.reload()
+                                    }}
+                                    className="text-blue-400 text-sm"
+                                >
+                                    Mark Read
+                                </button>
+                            )}
+
+                        </div>
+                    ))
+                )}
+            </div>
 
         </div>
     )
@@ -67,33 +106,36 @@ function LandlordDashboard() {
     )
 }
 
-function TenantDashboard({ leases }: { leases: any[] }) {
+function TenantDashboard({ leases }: any) {
     return (
         <div>
             <h2 className="text-xl mb-4">Tenant Dashboard</h2>
 
-            <div key={l.id} className="glass p-4 mb-2">
-                {l.property_name} → ₹{l.rent_amount} ({l.status})
+            {leases.map((l: any) => (
+                <div key={l.id} className="glass p-4 mb-2">
+                    {l.property_name} → ₹{l.rent_amount} ({l.status})
 
-                <button
-                    onClick={() => handlePayment(l.rent_amount, "rent")}
-                    className="bg-green-600 text-white px-3 py-1 ml-2"
-                >
-                    Pay Rent
-                </button>
-            </div>
+                    <button
+                        onClick={() => handlePayment(l.rent_amount, "rent")}
+                        className="bg-green-600 text-white px-3 py-1 ml-2"
+                    >
+                        Pay Rent
+                    </button>
+                </div>
+            ))}
         </div>
     )
 }
-
 function Card({ title, value }: any) {
     return (
         <motion.div
-            whileHover={{ scale: 1.05 }}
-            className="glass p-6"
+            whileHover={{ scale: 1.08 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="glass p-6 shadow-xl"
         >
             <h2 className="text-gray-300">{title}</h2>
-            <p className="text-2xl font-bold">{value}</p>
+            <p className="text-3xl font-bold mt-2">{value}</p>
         </motion.div>
     )
 }
