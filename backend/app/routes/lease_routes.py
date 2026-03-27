@@ -1,20 +1,18 @@
-from fastapi import APIRouter
-from pydantic import BaseModel
-from app.services.lease_service import create_lease, get_all_leases
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+from app.db import get_db
 from app.schemas.lease import LeaseSchema
+from app.services.lease_service import create_lease, get_all_leases
 
 router = APIRouter(prefix="/lease")
 
 
-
-
-# 🔹 CREATE LEASE
 @router.post("/")
-def create(data: LeaseSchema):
-    return create_lease(data.dict())
+def create(data: LeaseSchema, db: Session = Depends(get_db)):
+    lease = create_lease(db, data)
+    return lease
 
 
-# 🔹 GET ALL LEASES
 @router.get("/")
-def get_all():
-    return get_all_leases()
+def get_all(db: Session = Depends(get_db)):
+    return get_all_leases(db)

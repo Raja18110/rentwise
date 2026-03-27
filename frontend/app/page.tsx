@@ -4,9 +4,13 @@ import Link from "next/link"
 import { motion } from "framer-motion"
 import { useState } from "react"
 import { Sun, Moon, CreditCard, MessageCircle, Wrench } from "lucide-react"
+import axios from "axios"
 
 export default function Home() {
   const [dark, setDark] = useState(false)
+  const [leases, setLeases] = useState([])
+
+
 
   return (
     <div className={dark ? "dark" : ""}>

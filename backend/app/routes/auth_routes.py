@@ -6,7 +6,8 @@ from app.db import get_db
 from sqlalchemy.orm import Session
     
 from app.schemas.user import LoginSchema, RegisterSchema
-from pydantic import BaseModel
+from google.oauth2 import id_token
+from google.auth.transport import requests as grequests
 
 class OTPRequest(BaseModel):
     email: str
@@ -14,6 +15,8 @@ class OTPRequest(BaseModel):
 class VerifyOTP(BaseModel):
     email: str
     otp: str
+class GoogleLoginSchema(BaseModel):
+    token: str
 
 
 router = APIRouter(prefix="/auth")
@@ -50,19 +53,41 @@ def verify(request: VerifyOTP, db: Session = Depends(get_db)):
         return {"msg": "Verified"}
     return {"error": "Invalid OTP"}
     
-    user = db.query(User).filter(User.email == data.email).first()
+@router.post("/google")
+def google_login(data: GoogleLoginSchema, db: Session = Depends(get_db)):
 
+    try:
+        idinfo = id_token.verify_oauth2_token(
+            data.token,
+            grequests.Request(),
+            GOOGLE_CLIENT_ID
+        )
+
+        email = idinfo["email"]
+        name = idinfo.get("name", "")
+
+    except Exception:
+        return {"error": "Invalid Google token"}
+
+    # 🔍 Check user
+    user = db.query(User).filter(User.email == email).first()
+
+    # 🆕 Register if not exists
     if not user:
         user = User(
-            email=data.email,
-            username=data.email.split("@")[0],
+            email=email,
+            username=name,
             role="tenant"
         )
         db.add(user)
         db.commit()
         db.refresh(user)
 
-    token = create_token({"id": user.id})
+    # 🔐 Create token
+    token = create_token({
+        "id": user.id,
+        "email": user.email
+    })
 
     return {
         "token": token,

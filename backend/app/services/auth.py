@@ -3,7 +3,6 @@ from app.models.user import User
 from app.utils.hash import hash_password, verify_password
 from app.utils.jwt import create_token
 
-db = SessionLocal()
 
 # ✅ REGISTER
 def register_user(db, email, username, password, role):
@@ -36,8 +35,9 @@ def login_user(db, email, password):
         return {"error": "Wrong password"}
 
     token = create_token({
-        "email": user.email,
-        "role": user.role
+    "id": user.id,
+    "email": user.email,
+    "role": user.role
     })
 
     return {

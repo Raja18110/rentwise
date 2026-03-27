@@ -40,6 +40,19 @@ export default function Lease() {
             <button onClick={createLease} className="bg-blue-600 text-white px-4 py-2">
                 Create Lease
             </button>
+            <input placeholder="Start Date"
+                onChange={e => setData({ ...data, start_date: e.target.value })}
+            />
+
+            <input placeholder="End Date"
+                onChange={e => setData({ ...data, end_date: e.target.value })}
+            />
+
+            <select onChange={e => setData({ ...data, status: e.target.value })}>
+                <option value="Pending">Pending</option>
+                <option value="Active">Active</option>
+                <option value="Expired">Expired</option>
+            </select>
 
         </div>
     )

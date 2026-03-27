@@ -3,6 +3,7 @@
 import { useState } from "react"
 import axios from "axios"
 import { useRouter } from "next/navigation"
+import { GoogleLogin } from "@react-oauth/google"
 
 export default function RegisterPage() {
     const [email, setEmail] = useState("")
@@ -27,6 +28,24 @@ export default function RegisterPage() {
 
         } catch (err) {
             alert("Registration failed")
+        }
+    }
+    const handleGoogleLogin = async (credentialResponse: any) => {
+        try {
+            const res = await axios.post(
+                "http://127.0.0.1:8000/auth/google",
+                {
+                    token: credentialResponse.credential
+                }
+            )
+
+            localStorage.setItem("token", res.data.token)
+            localStorage.setItem("role", res.data.role)
+
+            router.push("/dashboard")
+
+        } catch (err) {
+            alert("Google login failed")
         }
     }
 
@@ -72,6 +91,7 @@ export default function RegisterPage() {
                 >
                     Register
                 </button>
+                <GoogleLogin onSuccess={handleGoogleLogin} />
 
             </div>
 

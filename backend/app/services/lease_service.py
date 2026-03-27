@@ -1,28 +1,24 @@
-from app.db import SessionLocal
 from app.models.lease import Lease
 
-db = SessionLocal()
 
-def create_lease(data):
-    lease = Lease(**data)
+def create_lease(db, data):
+    lease = Lease(
+        property_name=data.property_name,
+        tenant_email=data.tenant_email,
+        rent_amount=data.rent_amount,
+        frequency=data.frequency,
+        deposit=data.deposit,
+        start_date=data.start_date,
+        end_date=data.end_date,
+        status=data.status
+    )
+
     db.add(lease)
     db.commit()
-    return {"msg": "Lease created"}
+    db.refresh(lease)
 
-def get_all_leases():
-    leases = db.query(Lease).all()
+    return lease
 
-    return [
-        {
-            "id": l.id,
-            "property_name": l.property_name,
-            "tenant_email": l.tenant_email,
-            "rent_amount": l.rent_amount,
-            "frequency": l.frequency,
-            "deposit": l.deposit,
-            "start_date": l.start_date,
-            "end_date": l.end_date,
-            "status": l.status
-        }
-        for l in leases
-    ]
+
+def get_all_leases(db):
+    return db.query(Lease).all()
