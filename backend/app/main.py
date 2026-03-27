@@ -9,7 +9,8 @@ from app.routes import upload
 from app.routes import payment
 from app.websocket import chat
 from app.routes import google_routes
-
+from app.models import payment 
+from app.routes import payment
 
 app = FastAPI()
 app.include_router(auth_routes.router)

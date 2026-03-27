@@ -8,6 +8,7 @@ import axios from "axios"
 export default function DashboardPage() {
     const [user, setUser] = useState<any>(null)
     const [leases, setLeases] = useState([])
+    const [payments, setPayments] = useState([])
 
     useEffect(() => {
         const u = getUser()
@@ -15,6 +16,10 @@ export default function DashboardPage() {
 
         axios.get("http://127.0.0.1:8000/lease")
             .then(res => setLeases(res.data))
+            .catch(err => console.error(err))
+
+        axios.get("http://127.0.0.1:8000/payment")
+            .then(res => setPayments(res.data))
             .catch(err => console.error(err))
 
     }, [])
@@ -31,7 +36,7 @@ export default function DashboardPage() {
             {user.role === "landlord" ? (
                 <LandlordDashboard />
             ) : (
-                <TenantDashboard />
+                <TenantDashboard leases={leases} />
             )}
             <div className="mt-8">
                 <h2 className="text-xl mb-3">Leases</h2>
@@ -62,14 +67,21 @@ function LandlordDashboard() {
     )
 }
 
-function TenantDashboard() {
+function TenantDashboard({ leases }: { leases: any[] }) {
     return (
         <div>
             <h2 className="text-xl mb-4">Tenant Dashboard</h2>
 
-            <button className="btn">
-                Pay Rent
-            </button>
+            <div key={l.id} className="glass p-4 mb-2">
+                {l.property_name} → ₹{l.rent_amount} ({l.status})
+
+                <button
+                    onClick={() => handlePayment(l.rent_amount, "rent")}
+                    className="bg-green-600 text-white px-3 py-1 ml-2"
+                >
+                    Pay Rent
+                </button>
+            </div>
         </div>
     )
 }
@@ -84,4 +96,15 @@ function Card({ title, value }: any) {
             <p className="text-2xl font-bold">{value}</p>
         </motion.div>
     )
+}
+const handlePayment = async (amount: number, type: string) => {
+    const user = JSON.parse(localStorage.getItem("token") || "{}")
+
+    await axios.post("http://127.0.0.1:8000/payment", {
+        email: user.email,
+        amount,
+        type
+    })
+
+    alert("Payment Successful ✅")
 }
