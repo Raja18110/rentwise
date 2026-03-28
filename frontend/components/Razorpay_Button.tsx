@@ -4,7 +4,7 @@ import axios from "axios"
 export default function PayButton() {
 
     const pay = async () => {
-        const { data } = await axios.post("http://localhost:8000/payment/create-order", { amount: 5000 })
+        const { data } = await axios.post("process.env.NEXT_PUBLIC_API_URL/payment/create-order", { amount: 5000 })
 
         const options = {
             key: "YOUR_KEY",

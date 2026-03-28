@@ -8,7 +8,7 @@ export default function Upload() {
         formData.append("file", file)
 
         const res = await axios.post(
-            "http://127.0.0.1:8000/upload",
+            "process.env.NEXT_PUBLIC_API_URL/upload",
             formData
         )
 

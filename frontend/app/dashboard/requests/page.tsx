@@ -11,7 +11,7 @@ export default function Requests() {
         formData.append("file", file)
 
         try {
-            await axios.post("http://127.0.0.1:8000/upload", formData)
+            await axios.post("process.env.NEXT_PUBLIC_API_URL/upload", formData)
             alert("Request submitted")
         } catch (err) {
             alert("Upload failed")

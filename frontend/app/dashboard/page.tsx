@@ -15,11 +15,11 @@ export default function DashboardPage() {
         const u = getUser()
         setUser(u)
 
-        axios.get("http://127.0.0.1:8000/lease")
+        axios.get("process.env.NEXT_PUBLIC_API_URL/lease")
             .then(res => setLeases(res.data))
             .catch(err => console.error(err))
 
-        axios.get("http://127.0.0.1:8000/payment")
+        axios.get("process.env.NEXT_PUBLIC_API_URL/payment")
             .then(res => {
                 if (u) {
                     const filtered = res.data.filter(
@@ -29,7 +29,7 @@ export default function DashboardPage() {
                 }
             })
             .catch(err => console.error(err))
-        axios.get("http://127.0.0.1:8000/notification/" + user.email)
+        axios.get("process.env.NEXT_PUBLIC_API_URL/notification/" + user.email)
             .then(res => setNotifications(res.data))
             .catch(err => console.error(err))
 
@@ -77,7 +77,7 @@ export default function DashboardPage() {
                             {n.status === "unread" && (
                                 <button
                                     onClick={async () => {
-                                        await axios.put(`http://127.0.0.1:8000/notification/read/${n.id}`)
+                                        await axios.put(`process.env.NEXT_PUBLIC_API_URL/notification/read/${n.id}`)
                                         window.location.reload()
                                     }}
                                     className="text-blue-400 text-sm"
@@ -142,7 +142,7 @@ function Card({ title, value }: any) {
 const handlePayment = async (amount: number, type: string) => {
     const user = JSON.parse(localStorage.getItem("token") || "{}")
 
-    await axios.post("http://127.0.0.1:8000/payment", {
+    await axios.post("process.env.NEXT_PUBLIC_API_URL/payment", {
         email: user.email,
         amount,
         type

@@ -15,7 +15,7 @@ export default function RegisterPage() {
 
     const handleRegister = async () => {
         try {
-            await axios.post("http://127.0.0.1:8000/auth/register", {
+            await axios.post("process.env.NEXT_PUBLIC_API_URL/auth/register", {
                 email,
                 username,
                 password,
@@ -33,7 +33,7 @@ export default function RegisterPage() {
     const handleGoogleLogin = async (credentialResponse: any) => {
         try {
             const res = await axios.post(
-                "http://127.0.0.1:8000/auth/google",
+                "process.env.NEXT_PUBLIC_API_URL/auth/google",
                 {
                     token: credentialResponse.credential
                 }

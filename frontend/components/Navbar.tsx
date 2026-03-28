@@ -17,7 +17,7 @@ export default function Navbar() {
         if (!user) return
 
         axios
-            .get(`http://127.0.0.1:8000/notification/${user.email}`)
+            .get(`process.env.NEXT_PUBLIC_API_URL/notification/${user.email}`)
             .then(res => {
                 setNotifications(res.data)
 
@@ -66,7 +66,7 @@ export default function Navbar() {
                                         {n.status === "unread" && (
                                             <button
                                                 onClick={async () => {
-                                                    await axios.put(`http://127.0.0.1:8000/notification/read/${n.id}`)
+                                                    await axios.put(`process.env.NEXT_PUBLIC_API_URL/notification/read/${n.id}`)
                                                     window.location.reload()
                                                 }}
                                                 className="text-xs text-blue-400 ml-2"

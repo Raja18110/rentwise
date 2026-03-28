@@ -7,7 +7,7 @@ export default function Payments() {
     const handlePayment = async () => {
         try {
             const { data } = await axios.post(
-                "http://127.0.0.1:8000/payment/create-order",
+                "process.env.NEXT_PUBLIC_API_URL/payment/create-order",
                 { amount: 5000 }
             )
 
