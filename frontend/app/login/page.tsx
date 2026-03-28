@@ -13,7 +13,7 @@ export default function LoginPage() {
     // 🔐 Normal login
     const handleLogin = async () => {
         try {
-            const res = await axios.post("http://127.0.0.1:8000/auth/login", {
+            const res = await axios.post('process.env.NEXT_PUBLIC_API_URL/auth/login', {
                 email,
                 password
             })
@@ -33,7 +33,7 @@ export default function LoginPage() {
     const handleGoogleLogin = async (credentialResponse: any) => {
         try {
             const res = await axios.post(
-                "http://127.0.0.1:8000/auth/google",
+                "process.env.NEXT_PUBLIC_API_URL/auth/google",
                 {
                     token: credentialResponse.credential
                 }
