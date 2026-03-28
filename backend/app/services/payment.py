@@ -1,11 +1,19 @@
-from sqlalchemy import Column, Integer, String, Float
-from app.db import Base
+from app.db import SessionLocal
+from app.models.payment import Payment
 
-class Payment(Base):
-    __tablename__ = "payments"
+db = SessionLocal()
 
-    id = Column(Integer, primary_key=True, index=True)
-    email = Column(String)
-    amount = Column(Float)
-    type = Column(String)  # rent / maintenance
-    status = Column(String, default="success")
+def create_payment(db, email, amount, type):
+    payment = Payment(
+        email=email,
+        amount=amount,
+        type=type,
+        status="success"
+    )
+    db.add(payment)
+    db.commit()
+    return payment
+
+
+def get_payments(db):
+    return db.query(Payment).all()
