@@ -3,16 +3,26 @@ import axios from "axios"
 
 export default function Upload() {
 
-    const handleFile = async (e: any) => {
-        const file = e.target.files[0]
+    const handleUpload = async (file: File) => {
+        const formData = new FormData()
+        formData.append("file", file)
 
-        const form = new FormData()
-        form.append("file", file)
+        const res = await axios.post(
+            "http://127.0.0.1:8000/upload",
+            formData
+        )
 
-        await axios.post("http://localhost:8000/upload", form)
-
-        alert("Uploaded")
+        return res.data.url
     }
+    return <input
+        type="file"
+        onChange={async (e) => {
+            const file = e.target.files?.[0]
+            if (!file) return
 
-    return <input type="file" onChange={handleFile} />
+            const url = await handleUpload(file)
+
+            console.log("Uploaded URL:", url)
+        }}
+    />
 }
