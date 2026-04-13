@@ -102,7 +102,19 @@ export default function RegisterPage() {
                 >
                     Register
                 </button>
-                <GoogleLogin onSuccess={handleGoogleLogin} />
+
+                <div className="mt-4 flex justify-center">
+                    <GoogleLogin onSuccess={handleGoogleLogin} />
+                </div>
+
+                <div className="mt-4 text-center">
+                    <p className="text-sm">
+                        Already have an account?{" "}
+                        <a href="/login" className="text-blue-400 hover:underline">
+                            Login here
+                        </a>
+                    </p>
+                </div>
 
             </div>
 

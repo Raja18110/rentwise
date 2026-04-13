@@ -97,7 +97,7 @@ export default function Navbar() {
                     className="btn"
                     onClick={() => {
                         localStorage.clear()
-                        window.location.href = "/login"
+                        window.location.href = "/dashboard"
                     }}
                 >
                     Logout

@@ -118,6 +118,15 @@ export default function LoginPage() {
                     <GoogleLogin onSuccess={handleGoogleLogin} />
                 </div>
 
+                <div className="mt-4 text-center">
+                    <p className="text-sm">
+                        Don't have an account?{" "}
+                        <a href="/register" className="text-blue-400 hover:underline">
+                            Register here
+                        </a>
+                    </p>
+                </div>
+
             </div>
 
         </div>
