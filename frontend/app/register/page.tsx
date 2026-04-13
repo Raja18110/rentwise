@@ -13,9 +13,16 @@ export default function RegisterPage() {
 
     const router = useRouter()
 
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
+
     const handleRegister = async () => {
+        if (!email.trim() || !username.trim() || !password.trim()) {
+            alert("Please fill in email, username, and password")
+            return
+        }
+
         try {
-            await axios.post("process.env.NEXT_PUBLIC_API_URL/auth/register", {
+            await axios.post(`${apiUrl}/auth/register`, {
                 email,
                 username,
                 password,
@@ -33,7 +40,7 @@ export default function RegisterPage() {
     const handleGoogleLogin = async (credentialResponse: any) => {
         try {
             const res = await axios.post(
-                "process.env.NEXT_PUBLIC_API_URL/auth/google",
+                `${apiUrl}/auth/google`,
                 {
                     token: credentialResponse.credential
                 }
@@ -41,6 +48,9 @@ export default function RegisterPage() {
 
             localStorage.setItem("token", res.data.token)
             localStorage.setItem("role", res.data.role)
+            if (res.data.username) {
+                localStorage.setItem("username", res.data.username)
+            }
 
             router.push("/dashboard")
 
@@ -78,6 +88,7 @@ export default function RegisterPage() {
                 />
 
                 <select
+                    value={role}
                     onChange={(e) => setRole(e.target.value)}
                     className="input mb-3"
                 >

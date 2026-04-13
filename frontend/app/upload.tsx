@@ -4,11 +4,12 @@ import axios from "axios"
 export default function Upload() {
 
     const handleUpload = async (file: File) => {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
         const formData = new FormData()
         formData.append("file", file)
 
         const res = await axios.post(
-            "process.env.NEXT_PUBLIC_API_URL/upload",
+            `${apiUrl}/upload`,
             formData
         )
 

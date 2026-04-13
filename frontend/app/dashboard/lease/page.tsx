@@ -1,58 +1,124 @@
 "use client"
 
 import axios from "axios"
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { getUser } from "@/utils/auth"
 
 export default function Lease() {
     const [data, setData] = useState<any>({})
+    const user = getUser()
+
+    useEffect(() => {
+        if (typeof window === "undefined") return
+
+        const searchParams = new URLSearchParams(window.location.search)
+        const propertyId = searchParams.get('propertyId')
+        const name = searchParams.get('name')
+        const location = searchParams.get('location')
+        const rent = searchParams.get('rent')
+
+        if (name && rent) {
+            setData({
+                property_name: name,
+                rent_amount: rent,
+                tenant_email: user?.email || '',
+                frequency: 'monthly',
+                deposit: '',
+                start_date: '',
+                end_date: ''
+            })
+        }
+    }, [user])
 
     const createLease = async () => {
-        await axios.post("process.env.NEXT_PUBLIC_API_URL/lease", data)
-        alert("Lease created")
+        // Validation
+        if (!data.property_name || !data.tenant_email || !data.rent_amount || !data.deposit || !data.start_date || !data.end_date) {
+            alert("Please fill all required fields")
+            return
+        }
+
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
+        try {
+            const payload = {
+                ...data,
+                rent_amount: parseFloat(data.rent_amount),
+                deposit: parseFloat(data.deposit)
+            }
+            await axios.post(`${apiUrl}/lease`, payload)
+            alert("Lease created successfully!")
+        } catch (err) {
+            console.error(err)
+            alert("Failed to create lease")
+        }
     }
 
     return (
-        <div className="p-6 max-w-xl mx-auto space-y-2">
+        <div className="p-6 max-w-xl mx-auto space-y-3">
 
             <h1 className="text-xl font-bold">Create Lease</h1>
 
-            <input placeholder="Property"
+            <input
+                placeholder="Property"
+                className="input"
+                value={data.property_name || ''}
                 onChange={e => setData({ ...data, property_name: e.target.value })}
             />
 
-            <input placeholder="Tenant Email"
+            <input
+                placeholder="Tenant Email"
+                className="input"
+                value={data.tenant_email || ''}
                 onChange={e => setData({ ...data, tenant_email: e.target.value })}
             />
 
-            <input placeholder="Rent"
+            <input
+                placeholder="Rent"
+                className="input"
+                type="number"
+                value={data.rent_amount || ''}
                 onChange={e => setData({ ...data, rent_amount: e.target.value })}
             />
 
-            <select onChange={e => setData({ ...data, frequency: e.target.value })}>
-                <option>monthly</option>
-                <option>yearly</option>
+            <select
+                className="input"
+                value={data.frequency || 'monthly'}
+                onChange={e => setData({ ...data, frequency: e.target.value })}
+            >
+                <option value="monthly">Monthly</option>
+                <option value="yearly">Yearly</option>
             </select>
 
-            <input placeholder="Deposit"
+            <input
+                placeholder="Deposit"
+                className="input"
+                type="number"
+                value={data.deposit || ''}
                 onChange={e => setData({ ...data, deposit: e.target.value })}
             />
 
-            <button onClick={createLease} className="bg-blue-600 text-white px-4 py-2">
+            <div>
+                <label className="block text-sm font-medium mb-1">Start Date</label>
+                <input
+                    className="input"
+                    type="date"
+                    value={data.start_date || ''}
+                    onChange={e => setData({ ...data, start_date: e.target.value })}
+                />
+            </div>
+
+            <div>
+                <label className="block text-sm font-medium mb-1">End Date</label>
+                <input
+                    className="input"
+                    type="date"
+                    value={data.end_date || ''}
+                    onChange={e => setData({ ...data, end_date: e.target.value })}
+                />
+            </div>
+
+            <button onClick={createLease} className="btn w-full">
                 Create Lease
             </button>
-            <input placeholder="Start Date"
-                onChange={e => setData({ ...data, start_date: e.target.value })}
-            />
-
-            <input placeholder="End Date"
-                onChange={e => setData({ ...data, end_date: e.target.value })}
-            />
-
-            <select onChange={e => setData({ ...data, status: e.target.value })}>
-                <option value="Pending">Pending</option>
-                <option value="Active">Active</option>
-                <option value="Expired">Expired</option>
-            </select>
 
         </div>
     )

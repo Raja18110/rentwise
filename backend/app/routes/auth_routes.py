@@ -4,10 +4,15 @@ from app.services.auth import register_user, login_user
 from app.services.otp_service import generate_otp, verify_otp
 from app.db import get_db
 from sqlalchemy.orm import Session
+from app.models.user import User
     
 from app.schemas.user import LoginSchema, RegisterSchema
 from google.oauth2 import id_token
 from google.auth.transport import requests as grequests
+from app.utils.jwt import create_token
+import os
+
+GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "your_google_client_id")
 
 class OTPRequest(BaseModel):
     email: str
@@ -86,10 +91,13 @@ def google_login(data: GoogleLoginSchema, db: Session = Depends(get_db)):
     # 🔐 Create token
     token = create_token({
         "id": user.id,
-        "email": user.email
+        "email": user.email,
+        "username": user.username,
+        "role": user.role
     })
 
     return {
         "token": token,
+        "username": user.username,
         "role": user.role
     }

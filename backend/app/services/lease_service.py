@@ -22,3 +22,12 @@ def create_lease(db, data):
 
 def get_all_leases(db):
     return db.query(Lease).all()
+
+
+def update_lease_status(db, lease_id, status):
+    lease = db.query(Lease).filter(Lease.id == lease_id).first()
+    if lease:
+        lease.status = status
+        db.commit()
+        return lease
+    return None

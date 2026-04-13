@@ -12,8 +12,9 @@ export default function GoogleSuccess() {
 
     const loginToBackend = async (email: string) => {
         try {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
             const res = await axios.post(
-                'process.env.NEXT_PUBLIC_API_URL/auth/google',
+                `${apiUrl}/auth/google`,
                 { email }
             )
 

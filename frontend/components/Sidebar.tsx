@@ -2,8 +2,28 @@
 
 import Link from "next/link"
 import { motion } from "framer-motion"
+import { getUser } from "../utils/auth"
 
 export default function Sidebar() {
+    const user = getUser()
+    const isLandlord = user?.role === "landlord"
+    const isTenant = user?.role === "tenant"
+
+    // Define menu items based on role
+    const menuItems = [
+        { name: "Dashboard", path: "/dashboard" },
+        ...(isLandlord ? [
+            { name: "Lease", path: "/dashboard/lease" },
+            { name: "Add Property", path: "/dashboard/property" }
+        ] : []),
+        ...(isTenant ? [
+            { name: "Chat", path: "/dashboard/chat" },
+            { name: "Payments", path: "/dashboard/payments" },
+            { name: "Requests", path: "/dashboard/requests" }
+        ] : []),
+        { name: "Settings", path: "/dashboard/settings" }
+    ]
+
     return (
         <div className="w-64 min-h-screen p-6 glass flex flex-col justify-between">
 
@@ -15,14 +35,7 @@ export default function Sidebar() {
             {/* Menu */}
             <ul className="space-y-4">
 
-                {[
-                    { name: "Dashboard", path: "/dashboard" },
-                    { name: "Lease", path: "/dashboard/lease" },
-                    { name: "Chat", path: "/chat" },
-                    { name: "Payments", path: "/payments" },
-                    { name: "Requests", path: "/requests" },
-                    { name: "Settings", path: "/dashboard/settings" }
-                ].map((item, i) => (
+                {menuItems.map((item, i) => (
 
                     <motion.li
                         key={i}

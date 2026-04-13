@@ -1,16 +1,18 @@
+import os
+
 from fastapi import APIRouter
 from pydantic import BaseModel
 from google.oauth2 import id_token
 from google.auth.transport import requests
 
-from app.services.auth import create_token
+from app.utils.jwt import create_token
 from app.db import SessionLocal
 from app.models.user import User
 
 router = APIRouter(prefix="/auth")
 db = SessionLocal()
 
-GOOGLE_CLIENT_ID = "YOUR_GOOGLE_CLIENT_ID"
+GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "your_google_client_id")
 
 
 class GoogleRequest(BaseModel):

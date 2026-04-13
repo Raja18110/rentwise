@@ -8,7 +8,8 @@ export default function Chat() {
     const [ws, setWs] = useState<WebSocket | null>(null)
 
     useEffect(() => {
-        const socket = new WebSocket("ws://process.env.NEXT_PUBLIC_API_URL/ws")
+        const apiUrl = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000").replace("http", "ws")
+        const socket = new WebSocket(`${apiUrl}/ws`)
 
         socket.onmessage = (event) => {
             setMessages(prev => [...prev, event.data])

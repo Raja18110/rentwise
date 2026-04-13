@@ -12,34 +12,36 @@ export default function Settings() {
     const userId = 1 // replace later with JWT decode
 
     const sendOtp = async () => {
-        await axios.post("process.env.NEXT_PUBLIC_API_URL/auth/send-otp", { email })
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
+        await axios.post(`${apiUrl}/auth/send-otp`, { email })
         alert("OTP sent")
     }
 
     const verifyAndUpdate = async () => {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
         const verify = await axios.post(
-            "process.env.NEXT_PUBLIC_API_URL/auth/verify-otp",
+            `${apiUrl}/auth/verify-otp`,
             { email, otp }
         )
 
         if (verify.data.message) {
 
             if (mode === "email") {
-                await axios.put("process.env.NEXT_PUBLIC_API_URL/user/update-email", {
+                await axios.put(`${apiUrl}/user/update-email`, {
                     user_id: userId,
                     new_email: newValue
                 })
             }
 
             if (mode === "username") {
-                await axios.put("process.env.NEXT_PUBLIC_API_URL/user/update-username", {
+                await axios.put(`${apiUrl}/user/update-username`, {
                     user_id: userId,
                     username: newValue
                 })
             }
 
             if (mode === "password") {
-                await axios.put("process.env.NEXT_PUBLIC_API_URL/user/update-password", {
+                await axios.put(`${apiUrl}/user/update-password`, {
                     user_id: userId,
                     password: newValue
                 })

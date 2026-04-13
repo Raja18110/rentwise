@@ -9,4 +9,8 @@ class LeaseSchema(BaseModel):
     deposit: float
     start_date: str
     end_date: str
+    status: str = "pending"
+
+
+class LeaseUpdateSchema(BaseModel):
     status: str

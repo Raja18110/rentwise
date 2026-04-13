@@ -5,7 +5,7 @@ export default function RootLayout({ children }: any) {
   return (
     <html>
       <body>
-        <GoogleOAuthProvider clientId="process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID">
+        <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ""}>
           {children}
         </GoogleOAuthProvider>
       </body>
