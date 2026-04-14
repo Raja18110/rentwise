@@ -26,10 +26,7 @@ export default function Home() {
                             Get Started
                         </Link>
 
-                        {/* DARK MODE TOGGLE */}
-                        <button onClick={() => setDark(!dark)}>
-                            {dark ? <Sun size={18} /> : <Moon size={18} />}
-                        </button>
+
                     </div>
                 </nav>
 
@@ -59,11 +56,11 @@ export default function Home() {
                         transition={{ delay: 0.5 }}
                         className="flex gap-4"
                     >
-                        <Link href="/login" className="bg-blue-600 text-white px-6 py-3 rounded-xl shadow-lg hover:scale-105 transition">
+                        <Link href="/login" className="bg-blue-600 text-white px-6 py-3 rounded-xl shadow-lg hover:bg-green-800 transition">
                             login here
                         </Link>
 
-                        <Link href="/register" className="border px-6 py-3 rounded-xl hover:bg-blue-100 dark:hover:bg-green-800 transition">
+                        <Link href="/register" className="bg-blue-600 text-white px-6 py-3 rounded-xl shadow-lg hover:bg-green-800 transition">
                             Create Account
                         </Link>
                     </motion.div>
