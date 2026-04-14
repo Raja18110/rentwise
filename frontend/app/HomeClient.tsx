@@ -63,7 +63,7 @@ export default function Home() {
                             login here
                         </Link>
 
-                        <Link href="/register" className="border px-6 py-3 rounded-xl hover:bg-blue-100 dark:hover:bg-gray-800 transition">
+                        <Link href="/register" className="border px-6 py-3 rounded-xl hover:bg-blue-100 dark:hover:bg-green-800 transition">
                             Create Account
                         </Link>
                     </motion.div>

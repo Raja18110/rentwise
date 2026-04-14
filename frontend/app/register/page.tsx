@@ -42,7 +42,8 @@ export default function RegisterPage() {
             const res = await axios.post(
                 `${apiUrl}/auth/google`,
                 {
-                    token: credentialResponse.credential
+                    token: credentialResponse.credential,
+                    role: role
                 }
             )
 

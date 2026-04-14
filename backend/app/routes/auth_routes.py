@@ -82,7 +82,7 @@ def google_login(data: GoogleLoginSchema, db: Session = Depends(get_db)):
         user = User(
             email=email,
             username=name,
-            role="tenant"
+            role=data.role
         )
         db.add(user)
         db.commit()
