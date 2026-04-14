@@ -95,28 +95,10 @@ export default function Home() {
 
                 </section>
 
-                {/* CTA */}
-                <section className="mt-24 text-center px-6">
-
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        whileInView={{ opacity: 1 }}
-                        className="bg-blue-600 text-white p-10 rounded-2xl shadow-xl max-w-3xl mx-auto"
-                    >
-                        <h2 className="text-2xl font-semibold mb-2">
-                            Ready to simplify property management?
-                        </h2>
-
-                        <Link href="/register" className="mt-4 inline-block bg-white text-blue-600 px-6 py-2 rounded-lg hover:scale-105 transition">
-                            Get Started Now
-                        </Link>
-                    </motion.div>
-
-                </section>
 
                 {/* FOOTER */}
                 <footer className="mt-20 mb-6 text-center text-gray-500 text-sm">
-                    © 2026 RentWise — Built with Next.js & FastAPI
+                    2026 RentWise — Built with Next.js & FastAPI
                 </footer>
 
             </div>
