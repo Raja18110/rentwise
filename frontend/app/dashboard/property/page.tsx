@@ -39,29 +39,30 @@ export default function PropertyPage() {
 
                 <h1 className="text-2xl font-bold text-white">Add Property</h1>
 
-            <input placeholder="Property Name"
-                className="input"
-                onChange={e => setData({ ...data, name: e.target.value })}
-            />
+                <input placeholder="Property Name"
+                    className="input"
+                    onChange={e => setData({ ...data, name: e.target.value })}
+                />
 
-            <input placeholder="Location"
-                className="input"
-                onChange={e => setData({ ...data, location: e.target.value })}
-            />
+                <input placeholder="Location"
+                    className="input"
+                    onChange={e => setData({ ...data, location: e.target.value })}
+                />
 
-            <input placeholder="Rent Amount"
-                className="input"
-                type="number"
-                onChange={e => setData({ ...data, rent: parseFloat(e.target.value) || 0 })}
-            />
+                <input placeholder="Rent Amount"
+                    className="input"
+                    type="number"
+                    onChange={e => setData({ ...data, rent: parseFloat(e.target.value) || 0 })}
+                />
 
-            <button
-                onClick={createProperty}
-                className="btn"
-            >
-                Add Property
-            </button>
+                <button
+                    onClick={createProperty}
+                    className="btn"
+                >
+                    Add Property
+                </button>
 
+            </div>
         </div>
     )
 }

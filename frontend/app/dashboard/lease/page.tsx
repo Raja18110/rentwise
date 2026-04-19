@@ -58,69 +58,70 @@ export default function Lease() {
 
                 <h1 className="text-2xl font-bold text-white">Create Lease</h1>
 
-            <input
-                placeholder="Property"
-                className="input"
-                value={data.property_name || ''}
-                onChange={e => setData({ ...data, property_name: e.target.value })}
-            />
-
-            <input
-                placeholder="Tenant Email"
-                className="input"
-                value={data.tenant_email || ''}
-                onChange={e => setData({ ...data, tenant_email: e.target.value })}
-            />
-
-            <input
-                placeholder="Rent"
-                className="input"
-                type="number"
-                value={data.rent_amount || ''}
-                onChange={e => setData({ ...data, rent_amount: e.target.value })}
-            />
-
-            <select
-                className="input"
-                value={data.frequency || 'monthly'}
-                onChange={e => setData({ ...data, frequency: e.target.value })}
-            >
-                <option value="monthly">Monthly</option>
-                <option value="yearly">Yearly</option>
-            </select>
-
-            <input
-                placeholder="Deposit"
-                className="input"
-                type="number"
-                value={data.deposit || ''}
-                onChange={e => setData({ ...data, deposit: e.target.value })}
-            />
-
-            <div>
-                <label className="block text-sm font-medium mb-1">Start Date</label>
                 <input
+                    placeholder="Property"
                     className="input"
-                    type="date"
-                    value={data.start_date || ''}
-                    onChange={e => setData({ ...data, start_date: e.target.value })}
+                    value={data.property_name || ''}
+                    onChange={e => setData({ ...data, property_name: e.target.value })}
                 />
-            </div>
 
-            <div>
-                <label className="block text-sm font-medium mb-1">End Date</label>
                 <input
+                    placeholder="Tenant Email"
                     className="input"
-                    type="date"
-                    value={data.end_date || ''}
-                    onChange={e => setData({ ...data, end_date: e.target.value })}
+                    value={data.tenant_email || ''}
+                    onChange={e => setData({ ...data, tenant_email: e.target.value })}
                 />
+
+                <input
+                    placeholder="Rent"
+                    className="input"
+                    type="number"
+                    value={data.rent_amount || ''}
+                    onChange={e => setData({ ...data, rent_amount: e.target.value })}
+                />
+
+                <select
+                    className="input"
+                    value={data.frequency || 'monthly'}
+                    onChange={e => setData({ ...data, frequency: e.target.value })}
+                >
+                    <option value="monthly">Monthly</option>
+                    <option value="yearly">Yearly</option>
+                </select>
+
+                <input
+                    placeholder="Deposit"
+                    className="input"
+                    type="number"
+                    value={data.deposit || ''}
+                    onChange={e => setData({ ...data, deposit: e.target.value })}
+                />
+
+                <div>
+                    <label className="block text-sm font-medium mb-1">Start Date</label>
+                    <input
+                        className="input"
+                        type="date"
+                        value={data.start_date || ''}
+                        onChange={e => setData({ ...data, start_date: e.target.value })}
+                    />
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium mb-1">End Date</label>
+                    <input
+                        className="input"
+                        type="date"
+                        value={data.end_date || ''}
+                        onChange={e => setData({ ...data, end_date: e.target.value })}
+                    />
+                </div>
+
+                <button onClick={createLease} className="btn w-full">
+                    Create Lease
+                </button>
+
             </div>
-
-            <button onClick={createLease} className="btn w-full">
-                Create Lease
-            </button>
-
         </div>
     )
 }
