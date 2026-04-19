@@ -24,28 +24,29 @@ export default function Chat() {
     }
 
     return (
-        <div className="p-6">
+        <div className="flex min-h-screen items-center justify-center px-4 py-10">
+            <div className="glass p-8 max-w-3xl w-full space-y-6">
+                <h1 className="text-2xl font-bold text-white">Chat</h1>
 
-            <h1 className="text-xl font-bold mb-4">Chat</h1>
+                <div className="glass p-4 h-60 overflow-y-scroll">
+                    {messages.map((m, i) => (
+                        <div key={i} className="mb-2 text-gray-100">{m}</div>
+                    ))}
+                </div>
 
-            <div className="border h-60 overflow-y-scroll p-2 mb-2">
-                {messages.map((m, i) => (
-                    <div key={i}>{m}</div>
-                ))}
+                <input
+                    value={msg}
+                    onChange={(e) => setMsg(e.target.value)}
+                    className="input mb-2"
+                />
+
+                <button
+                    onClick={sendMessage}
+                    className="btn w-full"
+                >
+                    Send
+                </button>
             </div>
-
-            <input
-                value={msg}
-                onChange={(e) => setMsg(e.target.value)}
-                className="border p-2 w-full mb-2"
-            />
-
-            <button
-                onClick={sendMessage}
-                className="bg-blue-500 text-white px-4 py-2"
-            >
-                Send
-            </button>
         </div>
     )
 }

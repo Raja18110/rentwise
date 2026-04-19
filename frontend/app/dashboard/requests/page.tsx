@@ -33,11 +33,10 @@ export default function Requests() {
     }
 
     return (
-        <div className="p-6">
+        <div className="flex min-h-screen items-center justify-center px-4 py-10">
+            <div className="glass p-8 max-w-md w-full">
 
-            <div className="glass p-6">
-
-                <h2 className="text-xl mb-4">Maintenance Request</h2>
+                <h2 className="text-2xl font-bold mb-4 text-white">Maintenance Request</h2>
 
                 <input
                     className="input mb-3"

@@ -22,6 +22,7 @@ class VerifyOTP(BaseModel):
     otp: str
 class GoogleLoginSchema(BaseModel):
     token: str
+    role: str = "tenant"
 
 
 router = APIRouter(prefix="/auth")
@@ -81,7 +82,7 @@ def google_login(data: GoogleLoginSchema, db: Session = Depends(get_db)):
     if not user:
         user = User(
             email=email,
-            username=name,
+            username=name or email.split("@")[0],
             role=data.role
         )
         db.add(user)

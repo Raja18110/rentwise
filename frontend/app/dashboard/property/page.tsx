@@ -34,9 +34,10 @@ export default function PropertyPage() {
     }
 
     return (
-        <div className="p-6 max-w-xl mx-auto space-y-3">
+        <div className="flex min-h-screen items-center justify-center px-4 py-10">
+            <div className="glass p-8 max-w-xl w-full space-y-4">
 
-            <h1 className="text-xl font-bold">Add Property</h1>
+                <h1 className="text-2xl font-bold text-white">Add Property</h1>
 
             <input placeholder="Property Name"
                 className="input"

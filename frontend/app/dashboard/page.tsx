@@ -20,7 +20,7 @@ export default function DashboardPage() {
         setUser(u)
     }, [router])
 
-    if (!user) return <div className="p-6">Loading...</div>
+    if (!user) return <div className="flex min-h-screen items-center justify-center">Loading...</div>
 
     return (
         <div className="p-6">
@@ -89,42 +89,39 @@ function LandlordDashboard() {
     }
 
     return (
-        <div className="space-y-6">
-            <h1 className="text-2xl font-bold">Landlord Dashboard</h1>
-
-            {/* 🔥 STATS */}
-            <div className="grid grid-cols-4 gap-6">
-                <Card title="Properties" value={properties.length} />
-                <Card title="Active Tenants" value={tenants.length} />
-                <Card title="Monthly Revenue" value={`₹${revenue}`} />
-                <Card title="Requests" value={requests.length} />
+        <div className="space-y-8">
+            <div className="glass p-6 rounded-3xl">
+                <h1 className="text-2xl font-bold">Landlord Dashboard</h1>
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-6">
+                    <Card title="Properties" value={properties.length} />
+                    <Card title="Active Tenants" value={tenants.length} />
+                    <Card title="Monthly Revenue" value={`₹${revenue}`} />
+                    <Card title="Requests" value={requests.length} />
+                </div>
             </div>
 
-            {/* 🏠 PROPERTY LIST */}
-            <div>
+            <div className="glass p-6 rounded-3xl">
                 <h2 className="text-xl mb-3">Properties</h2>
                 {properties.map((p: any) => (
-                    <div key={p.id} className="glass p-4 mb-2">
+                    <div key={p.id} className="glass p-4 mb-3">
                         {p.name} → ₹{p.rent}
                     </div>
                 ))}
             </div>
 
-            {/* 🔧 REQUESTS */}
-            <div>
+            <div className="glass p-6 rounded-3xl">
                 <h2 className="text-xl mb-3">Maintenance Requests</h2>
                 {requests.map((r: any) => (
-                    <div key={r.id} className="glass p-4 mb-2">
+                    <div key={r.id} className="glass p-4 mb-3">
                         {r.message}
                     </div>
                 ))}
             </div>
 
-            {/* 📋 MANAGE LEASES */}
-            <div>
+            <div className="glass p-6 rounded-3xl">
                 <h2 className="text-xl mb-3">Manage Leases</h2>
                 {leases.map((l: any) => (
-                    <div key={l.id} className="glass p-4 mb-2 flex justify-between items-center">
+                    <div key={l.id} className="glass p-4 mb-3 flex justify-between items-center">
                         <div>
                             {l.property_name} → {l.tenant_email} ({l.status})
                         </div>
@@ -181,11 +178,12 @@ function TenantDashboard({ user }: any) {
     )
 
     return (
-        <div className="space-y-6">
-            <h1 className="text-2xl font-bold">Tenant Dashboard</h1>
+        <div className="space-y-8">
+            <div className="glass p-6 rounded-3xl">
+                <h1 className="text-2xl font-bold">Tenant Dashboard</h1>
+            </div>
 
-            {/* 🔍 SEARCH PROPERTIES */}
-            <div>
+            <div className="glass p-6 rounded-3xl">
                 <h2 className="text-xl mb-3">Search Properties</h2>
                 <input
                     type="text"
@@ -211,14 +209,13 @@ function TenantDashboard({ user }: any) {
                 </div>
             </div>
 
-            {/* 🏠 MY LEASES */}
-            <div>
+            <div className="glass p-6 rounded-3xl">
                 <h2 className="text-xl mb-3">My Leases</h2>
                 {leases.length === 0 ? (
                     <p>No leases found</p>
                 ) : (
                     leases.map((l: any) => (
-                        <div key={l.id} className="glass p-4 mb-2">
+                        <div key={l.id} className="glass p-4 mb-3">
                             {l.property_name} → ₹{l.rent_amount} ({l.status})
                         </div>
                     ))

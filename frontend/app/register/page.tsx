@@ -15,6 +15,17 @@ export default function RegisterPage() {
 
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
 
+    const requestNotificationPermission = async () => {
+        if (typeof window === "undefined" || !("Notification" in window)) return
+
+        const permission = await Notification.requestPermission()
+        if (permission === "granted") {
+            new Notification("RentWise", {
+                body: "Notifications enabled. You will now receive rent reminders and alerts.",
+            })
+        }
+    }
+
     const handleRegister = async () => {
         if (!email.trim() || !username.trim() || !password.trim()) {
             alert("Please fill in email, username, and password")
@@ -30,22 +41,29 @@ export default function RegisterPage() {
             })
 
             alert("Registration successful")
-
             router.push("/login")
-
         } catch (err) {
+            console.error(err)
             alert("Registration failed")
         }
     }
+
     const handleGoogleLogin = async (credentialResponse: any) => {
+        if (!credentialResponse?.credential) {
+            alert("Google sign-in did not return the required credential")
+            return
+        }
+
         try {
-            const res = await axios.post(
-                `${apiUrl}/auth/google`,
-                {
-                    token: credentialResponse.credential,
-                    role: role
-                }
-            )
+            const res = await axios.post(`${apiUrl}/auth/google`, {
+                token: credentialResponse.credential,
+                role,
+            })
+
+            if (res.data.error) {
+                alert(res.data.error)
+                return
+            }
 
             localStorage.setItem("token", res.data.token)
             localStorage.setItem("role", res.data.role)
@@ -53,67 +71,97 @@ export default function RegisterPage() {
                 localStorage.setItem("username", res.data.username)
             }
 
+            await requestNotificationPermission()
             router.push("/dashboard")
-
         } catch (err) {
+            console.error(err)
             alert("Google login failed")
         }
     }
 
     return (
-        <div className="flex h-screen items-center justify-center">
+        <div className="page-shell flex items-center justify-center">
 
-            <div className="glass p-8 w-96">
+            <div className="page-card w-full max-w-md p-8">
 
-                <h1 className="text-xl font-bold mb-4 text-center">
-                    Register
-                </h1>
+                <div className="mb-8 text-center">
+                    <p className="text-sm uppercase tracking-[0.35em] text-sky-300">Create a new account</p>
+                    <h1 className="text-4xl font-bold mt-3">Register</h1>
+                    <p className="text-slate-300 mt-2">Choose your role and sign up with email or Google.</p>
+                </div>
 
-                <input
-                    placeholder="Email"
-                    className="input mb-3"
-                    onChange={(e) => setEmail(e.target.value)}
-                />
+                <label className="field-group">
+                    <span className="text-sm text-slate-200">Email</span>
+                    <input
+                        type="email"
+                        placeholder="name@example.com"
+                        className="input"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                    />
+                </label>
 
-                <input
-                    placeholder="Username"
-                    className="input mb-3"
-                    onChange={(e) => setUsername(e.target.value)}
-                />
+                <label className="field-group">
+                    <span className="text-sm text-slate-200">Username</span>
+                    <input
+                        placeholder="Your display name"
+                        className="input"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                    />
+                </label>
 
-                <input
-                    type="password"
-                    placeholder="Password"
-                    className="input mb-3"
-                    onChange={(e) => setPassword(e.target.value)}
-                />
+                <label className="field-group">
+                    <span className="text-sm text-slate-200">Password</span>
+                    <input
+                        type="password"
+                        placeholder="••••••••"
+                        className="input"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
+                </label>
 
-                <select
-                    value={role}
-                    onChange={(e) => setRole(e.target.value)}
-                    className="input mb-3"
-                >
-                    <option value="tenant">Tenant</option>
-                    <option value="landlord">Landlord</option>
-                </select>
+                <label className="field-group">
+                    <span className="text-sm text-slate-200">Role</span>
+                    <select
+                        value={role}
+                        onChange={(e) => setRole(e.target.value)}
+                        className="input"
+                    >
+                        <option value="tenant">Tenant</option>
+                        <option value="landlord">Landlord</option>
+                    </select>
+                </label>
 
                 <button
                     onClick={handleRegister}
-                    className="btn w-full"
+                    className="btn w-full py-3"
                 >
                     Register
                 </button>
 
-                <div className="mt-4 flex justify-center">
-                    <GoogleLogin onSuccess={handleGoogleLogin} />
+                <div className="mt-8 rounded-3xl border border-white/10 bg-white/5 p-5">
+                    <div className="mb-4">
+                        <p className="text-sm text-slate-300">Register with Google</p>
+                        <p className="text-xs text-slate-500">Pick your role before the Google sign-in flow.</p>
+                    </div>
+                    <select
+                        value={role}
+                        onChange={(e) => setRole(e.target.value)}
+                        className="input mb-4"
+                    >
+                        <option value="tenant">Tenant</option>
+                        <option value="landlord">Landlord</option>
+                    </select>
+                    <div className="flex justify-center">
+                        <GoogleLogin onSuccess={handleGoogleLogin} onError={() => alert("Google sign-in failed")} />
+                    </div>
                 </div>
 
-                <div className="mt-4 text-center">
-                    <p className="text-sm">
-                        Already have an account?{" "}
-                        <a href="/login" className="text-blue-400 hover:underline">
-                            Login here
-                        </a>
+                <div className="mt-6 text-center text-slate-300 text-sm">
+                    <p>
+                        Already have an account? <a href="/login" className="text-cyan-300 hover:underline">Login here</a>
                     </p>
                 </div>
 

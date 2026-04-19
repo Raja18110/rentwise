@@ -19,17 +19,25 @@ from app.routes import notification
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup
-    try:
-        Base.metadata.create_all(bind=engine)
-    except Exception as exc:
-        print(
-            "WARNING: Database initialization failed on startup. "
-            "Your DATABASE_URL may be unreachable or invalid."
-        )
-        print(exc)
+    import time
+
+    print("🚀 Starting RentWise backend...")
+
+    # Try DB connection (retry system)
+    for i in range(5):
+        try:
+            Base.metadata.create_all(bind=engine)
+            print("✅ Database connected")
+            break
+        except Exception as exc:
+            print(f"⏳ DB not ready... retry {i+1}")
+            time.sleep(3)
+    else:
+        print("⚠️ Running without DB (temporary)")
+
     yield
-    # Shutdown (if needed)
+
+    print("🛑 Shutting down...")
 
 
 app = FastAPI(lifespan=lifespan)

@@ -15,15 +15,23 @@ export default function Upload() {
 
         return res.data.url
     }
-    return <input
-        type="file"
-        onChange={async (e) => {
-            const file = e.target.files?.[0]
-            if (!file) return
+    return (
+        <div className="flex min-h-screen items-center justify-center px-4 py-10">
+            <div className="glass p-8 max-w-lg w-full">
+                <h1 className="text-2xl font-bold mb-4 text-center">Upload File</h1>
+                <input
+                    type="file"
+                    className="input"
+                    onChange={async (e) => {
+                        const file = e.target.files?.[0]
+                        if (!file) return
 
-            const url = await handleUpload(file)
+                        const url = await handleUpload(file)
 
-            console.log("Uploaded URL:", url)
-        }}
-    />
+                        console.log("Uploaded URL:", url)
+                    }}
+                />
+            </div>
+        </div>
+    )
 }
