@@ -60,7 +60,7 @@ class ConnectionManager:
 manager = ConnectionManager()
 
 
-@router.websocket("/ws")
+@router.websocket("/wss")
 async def websocket_endpoint(websocket: WebSocket):
     """
     WebSocket endpoint for real-time chat
