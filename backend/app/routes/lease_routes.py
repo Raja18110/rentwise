@@ -14,7 +14,6 @@ router = APIRouter(prefix="/lease", tags=["Leases"])
 
 @router.post("/", summary="Create new lease")
 def create(data: LeaseSchema, db: Session = Depends(get_db)):
-    """Create a new lease agreement"""
     try:
         lease = create_lease(db, data)
         return {
@@ -32,7 +31,6 @@ def create(data: LeaseSchema, db: Session = Depends(get_db)):
 
 @router.get("/", summary="Get all leases")
 def get_all(db: Session = Depends(get_db)):
-    """Get all leases"""
     try:
         leases = get_all_leases(db)
         return {

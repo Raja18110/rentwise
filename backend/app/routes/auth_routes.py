@@ -103,9 +103,6 @@ def login(data: LoginSchema, db: Session = Depends(get_db)):
 
 @router.post("/send-otp", summary="Send OTP to email")
 def send_otp(request: OTPRequest, db: Session = Depends(get_db)):
-    """
-    Send OTP to the provided email address.
-    """
     try:
         generate_otp(request.email)
         return {
