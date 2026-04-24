@@ -148,9 +148,7 @@ def verify(request: VerifyOTP, db: Session = Depends(get_db)):
     
 @router.post("/google", summary="Google OAuth login")
 def google_login(data: GoogleLoginSchema, db: Session = Depends(get_db)):
-    """
-    Login or register using Google OAuth token.
-    """
+
     if not GOOGLE_CLIENT_ID or GOOGLE_CLIENT_ID == "your_google_client_id":
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

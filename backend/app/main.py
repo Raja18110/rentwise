@@ -18,17 +18,7 @@ from app.models import property as property_model
 from app.routes import notification
 
 
-# Frontend URL configuration
-FRONTEND_URLS = [
-    "http://localhost:3002",
-    "http://localhost:3000",
-    "https://rentwise.vercel.app",
-    "https://www.rentwise.vercel.app",
-]
-
-# Add environment-based URLs
-if os.getenv("FRONTEND_URL"):
-    FRONTEND_URLS.extend(os.getenv("FRONTEND_URL", "").split(","))
+RONTEND_URLS = os.getenv("FRONTEND_URLS", "http://localhost:3000").split(",")
 
 
 @asynccontextmanager
