@@ -44,7 +44,7 @@ export default function Lease() {
                 rent_amount: parseFloat(data.rent_amount),
                 deposit: parseFloat(data.deposit)
             }
-            await axios.post(`${apiUrl}/lease`, payload)
+            await axios.post(`${apiUrl}/lease/`, payload)
             alert("Lease created successfully!")
         } catch (err) {
             console.error(err)

@@ -1,12 +1,25 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import axios from "axios"
 import API from "@/utils/api"
 import { getUser } from "@/utils/auth"
 
 export default function PropertyPage() {
     const [data, setData] = useState<any>({})
+    const [properties, setProperties] = useState<any[]>([])
+    useEffect(() => {
+        fetchProperties()
+    }, [])
+
+    const fetchProperties = async () => {
+        try {
+            const res = await axios.get(`${API}/property`)
+            setProperties(res.data.data || [])
+        } catch (err) {
+            console.error(err)
+        }
+    }
 
     const createProperty = async () => {
         const user = getUser()

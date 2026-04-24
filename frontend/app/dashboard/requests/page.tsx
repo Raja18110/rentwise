@@ -21,7 +21,7 @@ export default function Requests() {
 
         try {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
-            await axios.post(`${apiUrl}/upload`, formData)
+            await axios.post(`${apiUrl}/upload/`, formData)
             alert("Request submitted")
             setTitle("")
             setDescription("")

@@ -11,20 +11,24 @@ export default function GoogleSuccess() {
 
 
     useEffect(() => {
+        const credential = localStorage.getItem("google_token")
+
+        if (!credential) {
+            router.push("/login")
+            return
+        }
+
         const loginToBackend = async () => {
             try {
-                const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
+                const apiUrl = process.env.NEXT_PUBLIC_API_URL
                 const res = await axios.post(`${apiUrl}/auth/google`, {
-                    token: "",
+                    token: credential,
                 })
 
-                if (res.data.token) {
-                    localStorage.setItem("token", res.data.token)
-                    localStorage.setItem("role", res.data.role)
-                    router.push("/dashboard")
-                } else {
-                    router.push("/login")
-                }
+                localStorage.setItem("token", res.data.token)
+                localStorage.setItem("role", res.data.role)
+
+                router.push("/dashboard")
             } catch (err) {
                 console.error(err)
                 router.push("/login")
@@ -32,7 +36,7 @@ export default function GoogleSuccess() {
         }
 
         loginToBackend()
-    }, [router])
+    }, [])
 
     return (
         <div className="page-shell flex items-center justify-center">

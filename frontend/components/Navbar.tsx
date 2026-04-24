@@ -22,7 +22,7 @@ export default function Navbar() {
         axios
             .get(`${apiUrl}/notification/${user.email}`)
             .then(res => {
-                const unread = (res.data || []).filter(
+                const unread = (res.data.data || []).filter(
                     (n: any) => n.status === "unread"
                 )
                 setCount(unread.length)

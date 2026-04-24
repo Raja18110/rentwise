@@ -24,19 +24,19 @@ export default function LandlordPage() {
                 axios.get(`${API}/request`)
             ])
 
-            setProperties(propertyRes.data || [])
+            setProperties(propertyRes.data.data || [])
 
             setTenants(
-                (leaseRes.data || []).filter((l: any) => l.status === "active")
+                (leaseRes.data.data || []).filter((l: any) => l.status === "active")
             )
 
-            const total = (paymentRes.data || []).reduce(
+            const total = (paymentRes.data.data || []).reduce(
                 (sum: number, p: any) => sum + (p.amount || 0),
                 0
             )
 
             setRevenue(total)
-            setRequests(requestRes.data || [])
+            setRequests(requestRes.data.data || [])
 
         } catch (err) {
             console.error("Error fetching data:", err)

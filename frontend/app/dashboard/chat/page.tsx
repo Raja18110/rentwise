@@ -51,9 +51,9 @@ export default function Chat() {
                 setConnecting(true)
                 const apiUrl = (
                     process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
-                ).replace("http", "ws")
+                ).replace("http", "wss")
 
-                const socket = new WebSocket(`${apiUrl}/ws`)
+                const socket = new WebSocket(`${apiUrl}/wss`)
 
                 socket.onopen = () => {
                     console.log("✅ WebSocket connected")
@@ -217,10 +217,10 @@ export default function Chat() {
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0 }}
                                     className={`mb-3 p-3 rounded-lg max-w-xs ${m.type === "message"
-                                            ? m.user === (user?.username || user?.email)
-                                                ? "ml-auto bg-blue-500/20 text-blue-200"
-                                                : "bg-slate-700/50 text-gray-100"
-                                            : "bg-yellow-500/20 text-yellow-200 text-xs italic"
+                                        ? m.user === (user?.username || user?.email)
+                                            ? "ml-auto bg-blue-500/20 text-blue-200"
+                                            : "bg-slate-700/50 text-gray-100"
+                                        : "bg-yellow-500/20 text-yellow-200 text-xs italic"
                                         }`}
                                 >
                                     {m.type !== "message" && (
