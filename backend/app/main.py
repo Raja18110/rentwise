@@ -18,7 +18,7 @@ from app.models import property as property_model
 from app.routes import notification
 
 
-RONTEND_URLS = os.getenv("FRONTEND_URLS", "http://localhost:3000").split(",")
+FRONTEND_URLS = os.getenv("FRONTEND_URLS", "http://localhost:3000").split(",")
 
 
 @asynccontextmanager
@@ -82,18 +82,3 @@ def home():
         "message": "RentWise API",
         "version": "1.0.0"
     }
-
-
-@app.get("/health")
-def health_check():
-    """Health check endpoint for monitoring"""
-    return {
-        "status": "healthy",
-        "service": "RentWise API"
-    }
-
-
-@app.options("/{full_path:path}")
-def options_handler(full_path: str):
-    """Handle preflight requests for CORS"""
-    return {}
