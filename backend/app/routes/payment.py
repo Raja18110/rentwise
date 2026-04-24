@@ -6,56 +6,116 @@ try:
 except ImportError:
     RAZORPAY_AVAILABLE = False
 
-from fastapi import APIRouter, Depends
-from pydantic import BaseModel
+from fastapi import APIRouter, Depends, HTTPException, status
+from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 from app.db import get_db
 from app.services.payment import create_payment, get_payments
 from app.services.notification import create_notification
 
-router = APIRouter(prefix="/payment")
-
-
 class PaymentSchema(BaseModel):
     email: str
-    amount: float
+    amount: float = Field(..., gt=0)
     type: str
 
-
 class CreateOrderSchema(BaseModel):
-    amount: int
+    amount: int = Field(..., gt=0)
+
+router = APIRouter(prefix="/payment", tags=["Payments"])
 
 
-@router.post("/")
+@router.post("/", summary="Create payment")
 def pay(data: PaymentSchema, db: Session = Depends(get_db)):
-    create_notification(db, data.email, f"Payment of ₹{data.amount} created.")
-    return create_payment(db, data.email, data.amount, data.type)
+    """Create a new payment record"""
+    try:
+        create_notification(
+            db,
+            data.email,
+            f"Payment of ₹{data.amount} created."
+        )
+        payment = create_payment(db, data.email, data.amount, data.type)
+        
+        return {
+            "success": True,
+            "message": "Payment created successfully",
+            "data": payment
+        }
+    except Exception as e:
+        print(f"Create payment error: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to create payment"
+        )
 
 
-@router.post("/create-order")
+@router.post("/create-order", summary="Create Razorpay order")
 def create_order(data: CreateOrderSchema):
-    key_id = os.getenv("RAZORPAY_KEY_ID")
-    key_secret = os.getenv("RAZORPAY_KEY_SECRET")
+    """Create a Razorpay order for payment"""
+    try:
+        key_id = os.getenv("RAZORPAY_KEY_ID")
+        key_secret = os.getenv("RAZORPAY_KEY_SECRET")
 
-    if key_id and key_secret and RAZORPAY_AVAILABLE:
-        client = razorpay.Client(auth=(key_id, key_secret))
-        order = client.order.create({
-            "amount": data.amount * 100,
-            "currency": "INR",
-            "receipt": "receipt_1",
-            "payment_capture": 1,
-        })
-        return order
+        if not key_id or not key_secret:
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="Razorpay not configured"
+            )
 
-    return {
-        "id": "test_order",
-        "amount": data.amount * 100,
-        "currency": "INR",
-        "is_test_order": True,
-    }
+        if not RAZORPAY_AVAILABLE:
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="Razorpay SDK not installed"
+            )
+
+        try:
+            client = razorpay.Client(auth=(key_id, key_secret))
+            order = client.order.create({
+                "amount": data.amount * 100,  # Convert to paise
+                "currency": "INR",
+                "receipt": f"receipt_{data.amount}",
+                "payment_capture": 1,
+            })
+            
+            return {
+                "success": True,
+                "data": order
+            }
+        except razorpay.BadRequestError as e:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Invalid payment details: {str(e)}"
+            )
+        except razorpay.ServerError as e:
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="Razorpay service temporarily unavailable"
+            )
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Create order error: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to create payment order"
+        )
 
 
-@router.get("/")
+@router.get("/", summary="Get all payments")
 def history(db: Session = Depends(get_db)):
-    return get_payments(db)
+    """Get payment history"""
+    try:
+        payments = get_payments(db)
+        
+        return {
+            "success": True,
+            "data": payments,
+            "count": len(payments) if payments else 0
+        }
+    except Exception as e:
+        print(f"Get payments error: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to retrieve payments"
+        )

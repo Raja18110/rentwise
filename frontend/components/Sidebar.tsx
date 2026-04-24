@@ -11,17 +11,18 @@ export default function Sidebar() {
 
     // Define menu items based on role
     const menuItems = [
-        { name: "Dashboard", path: "/dashboard" },
+        { name: "Dashboard", path: "/dashboard", icon: "📊" },
+        { name: "Notifications", path: "/notifications", icon: "🔔" },
         ...(isLandlord ? [
-            { name: "Lease", path: "/dashboard/lease" },
-            { name: "Add Property", path: "/dashboard/property" }
+            { name: "Lease", path: "/dashboard/lease", icon: "📄" },
+            { name: "Add Property", path: "/dashboard/property", icon: "🏠" }
         ] : []),
         ...(isTenant ? [
-            { name: "Chat", path: "/dashboard/chat" },
-            { name: "Payments", path: "/dashboard/payments" },
-            { name: "Requests", path: "/dashboard/requests" }
+            { name: "Chat", path: "/dashboard/chat", icon: "💬" },
+            { name: "Payments", path: "/dashboard/payments", icon: "💳" },
+            { name: "Requests", path: "/dashboard/requests", icon: "✉️" }
         ] : []),
-        { name: "Settings", path: "/dashboard/settings" }
+        { name: "Settings", path: "/dashboard/settings", icon: "⚙️" }
     ]
 
     return (
@@ -33,7 +34,7 @@ export default function Sidebar() {
             </h2>
 
             {/* Menu */}
-            <ul className="space-y-4">
+            <ul className="space-y-2">
 
                 {menuItems.map((item, i) => (
 
@@ -42,7 +43,8 @@ export default function Sidebar() {
                         whileHover={{ scale: 1.05, x: 5 }}
                         className="p-2 rounded-lg hover:bg-white/10 transition"
                     >
-                        <Link href={item.path}>
+                        <Link href={item.path} className="flex items-center gap-2">
+                            <span>{item.icon}</span>
                             {item.name}
                         </Link>
                     </motion.li>
@@ -53,7 +55,7 @@ export default function Sidebar() {
 
             {/* Footer */}
             <p className="text-sm text-gray-400 mt-10">
-                © RentWise
+                © RentWise 2024
             </p>
 
         </div>

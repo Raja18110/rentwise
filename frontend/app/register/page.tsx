@@ -4,12 +4,15 @@ import { useState } from "react"
 import axios from "axios"
 import { useRouter } from "next/navigation"
 import { GoogleLogin } from "@react-oauth/google"
+import toast from "react-hot-toast"
+import { motion } from "framer-motion"
 
 export default function RegisterPage() {
     const [email, setEmail] = useState("")
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
     const [role, setRole] = useState("tenant")
+    const [loading, setLoading] = useState(false)
 
     const router = useRouter()
 
@@ -28,11 +31,17 @@ export default function RegisterPage() {
 
     const handleRegister = async () => {
         if (!email.trim() || !username.trim() || !password.trim()) {
-            alert("Please fill in email, username, and password")
+            toast.error("Please fill in email, username, and password")
+            return
+        }
+
+        if (password.length < 6) {
+            toast.error("Password must be at least 6 characters")
             return
         }
 
         try {
+            setLoading(true)
             await axios.post(`${apiUrl}/auth/register`, {
                 email,
                 username,
@@ -40,28 +49,32 @@ export default function RegisterPage() {
                 role,
             })
 
-            alert("Registration successful")
+            toast.success("Registration successful! Redirecting to login...")
             router.push("/login")
-        } catch (err) {
+        } catch (err: any) {
             console.error(err)
-            alert("Registration failed")
+            const errorMsg = err.response?.data?.error || err.response?.data?.detail || err.message || "Registration failed"
+            toast.error(errorMsg)
+        } finally {
+            setLoading(false)
         }
     }
 
     const handleGoogleLogin = async (credentialResponse: any) => {
         if (!credentialResponse?.credential) {
-            alert("Google sign-in did not return the required credential")
+            toast.error("Google sign-in did not return the required credential")
             return
         }
 
         try {
+            setLoading(true)
             const res = await axios.post(`${apiUrl}/auth/google`, {
                 token: credentialResponse.credential,
                 role,
             })
 
             if (res.data.error) {
-                alert(res.data.error)
+                toast.error(res.data.error)
                 return
             }
 
@@ -71,18 +84,34 @@ export default function RegisterPage() {
                 localStorage.setItem("username", res.data.username)
             }
 
+            toast.success("Google registration successful! Redirecting...")
             await requestNotificationPermission()
             router.push("/dashboard")
-        } catch (err) {
+        } catch (err: any) {
             console.error(err)
-            alert("Google login failed")
+            const errorMsg = err.response?.data?.error || err.response?.data?.detail || err.message || "Google login failed"
+            toast.error(errorMsg)
+        } finally {
+            setLoading(false)
         }
     }
 
-    return (
-        <div className="page-shell flex items-center justify-center">
+    const handleGoogleError = () => {
+        toast.error("Google sign-in failed. Please try again.")
+    }
 
-            <div className="page-card w-full max-w-md p-8">
+    return (
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="page-shell flex items-center justify-center"
+        >
+
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="page-card w-full max-w-md p-8"
+            >
 
                 <div className="mb-8 text-center">
                     <p className="text-sm uppercase tracking-[0.35em] text-sky-300">Create a new account</p>
@@ -98,6 +127,7 @@ export default function RegisterPage() {
                         className="input"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
+                        disabled={loading}
                     />
                 </label>
 
@@ -108,6 +138,7 @@ export default function RegisterPage() {
                         className="input"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
+                        disabled={loading}
                     />
                 </label>
 
@@ -119,7 +150,9 @@ export default function RegisterPage() {
                         className="input"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
+                        disabled={loading}
                     />
+                    <p className="text-xs text-slate-400 mt-1">Minimum 6 characters</p>
                 </label>
 
                 <label className="field-group">
@@ -128,18 +161,22 @@ export default function RegisterPage() {
                         value={role}
                         onChange={(e) => setRole(e.target.value)}
                         className="input"
+                        disabled={loading}
                     >
                         <option value="tenant">Tenant</option>
                         <option value="landlord">Landlord</option>
                     </select>
                 </label>
 
-                <button
+                <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
                     onClick={handleRegister}
-                    className="btn w-full py-3"
+                    disabled={loading}
+                    className="btn w-full py-3 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                    Register
-                </button>
+                    {loading ? "Registering..." : "Register"}
+                </motion.button>
 
                 <div className="mt-8 rounded-3xl border border-white/10 bg-white/5 p-5">
                     <div className="mb-4">
@@ -150,12 +187,16 @@ export default function RegisterPage() {
                         value={role}
                         onChange={(e) => setRole(e.target.value)}
                         className="input mb-4"
+                        disabled={loading}
                     >
                         <option value="tenant">Tenant</option>
                         <option value="landlord">Landlord</option>
                     </select>
                     <div className="flex justify-center">
-                        <GoogleLogin onSuccess={handleGoogleLogin} onError={() => alert("Google sign-in failed")} />
+                        <GoogleLogin
+                            onSuccess={handleGoogleLogin}
+                            onError={handleGoogleError}
+                        />
                     </div>
                 </div>
 
@@ -165,8 +206,8 @@ export default function RegisterPage() {
                     </p>
                 </div>
 
-            </div>
+            </motion.div>
 
-        </div>
+        </motion.div>
     )
 }

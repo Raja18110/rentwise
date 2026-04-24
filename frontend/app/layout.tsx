@@ -1,10 +1,12 @@
 import "./globals.css"
 import { GoogleOAuthProvider } from "@react-oauth/google"
+import { Toaster } from "react-hot-toast"
 
 export default function RootLayout({ children }: any) {
   return (
     <html>
       <body className="min-h-screen text-white">
+        <Toaster position="top-right" />
         <div className="relative min-h-screen overflow-hidden">
           <div
             className="absolute inset-0 bg-cover bg-center"
