@@ -2,10 +2,16 @@
 
 import Link from "next/link"
 import { motion } from "framer-motion"
+import { useEffect, useState } from "react"
 import { getUser } from "../utils/auth"
 
 export default function Sidebar() {
-    const user = getUser()
+    const [user, setUser] = useState<any>(null)
+
+    useEffect(() => {
+        setUser(getUser())
+    }, [])
+
     const isLandlord = user?.role === "landlord"
     const isTenant = user?.role === "tenant"
 

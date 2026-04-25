@@ -1,12 +1,12 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 import axios from "axios"
 import { getUser } from "@/utils/auth"
 
 export default function Requests() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
-    const user = useMemo(() => getUser(), [])
+    const [user, setUser] = useState<any>(null)
     const [leases, setLeases] = useState<any[]>([])
     const [selectedLeaseId, setSelectedLeaseId] = useState("")
     const [title, setTitle] = useState("")
@@ -14,19 +14,21 @@ export default function Requests() {
     const [priority, setPriority] = useState("normal")
 
     useEffect(() => {
-        if (!user?.email || typeof window === "undefined") return
+        const currentUser = getUser()
+        setUser(currentUser)
+        if (!currentUser?.email || typeof window === "undefined") return
 
         const searchParams = new URLSearchParams(window.location.search)
         const leaseId = searchParams.get("leaseId")
         if (leaseId) setSelectedLeaseId(leaseId)
 
-        axios.get(`${apiUrl}/lease/tenant/${encodeURIComponent(user.email)}`)
+        axios.get(`${apiUrl}/lease/tenant/${encodeURIComponent(currentUser.email)}`)
             .then((res) => setLeases(res.data?.data || []))
             .catch((err) => {
                 console.error(err)
                 setLeases([])
             })
-    }, [apiUrl, user])
+    }, [apiUrl])
 
     const selectedLease = leases.find((lease) => String(lease.id) === selectedLeaseId)
 

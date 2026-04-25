@@ -1,7 +1,7 @@
 "use client"
 
 import axios from "axios"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 import { getUser } from "@/utils/auth"
 
 const RAZORPAY_SCRIPT = "https://checkout.razorpay.com/v1/checkout.js"
@@ -32,22 +32,24 @@ export default function Payments() {
     const [loading, setLoading] = useState(false)
     const [leases, setLeases] = useState<any[]>([])
     const [selectedLeaseId, setSelectedLeaseId] = useState("")
-    const user = useMemo(() => getUser(), [])
+    const [user, setUser] = useState<any>(null)
 
     useEffect(() => {
-        if (!user?.email || typeof window === "undefined") return
+        const currentUser = getUser()
+        setUser(currentUser)
+        if (!currentUser?.email || typeof window === "undefined") return
 
         const searchParams = new URLSearchParams(window.location.search)
         const leaseId = searchParams.get("leaseId")
         if (leaseId) setSelectedLeaseId(leaseId)
 
-        axios.get(`${apiUrl}/lease/tenant/${encodeURIComponent(user.email)}`)
+        axios.get(`${apiUrl}/lease/tenant/${encodeURIComponent(currentUser.email)}`)
             .then((res) => setLeases(res.data?.data || []))
             .catch((err) => {
                 console.error(err)
                 setLeases([])
             })
-    }, [apiUrl, user])
+    }, [apiUrl])
 
     const selectedLease = leases.find((lease) => String(lease.id) === selectedLeaseId)
 
