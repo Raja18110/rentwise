@@ -40,7 +40,7 @@ export default function NotificationsPage() {
             setLoading(true)
             setError(null)
             const res = await axios.get(`${apiUrl}/notification/${encodeURIComponent(email)}`)
-            
+
             if (res.data?.data) {
                 setNotifications(res.data.data)
             } else if (Array.isArray(res.data)) {
@@ -140,9 +140,9 @@ export default function NotificationsPage() {
                                     initial={{ opacity: 0, y: 10 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: index * 0.05 }}
-                                    className={`p-4 rounded-lg border-l-4 cursor-pointer transition-all ${ notification.status === "unread"
-                                            ? "bg-blue-500/10 border-blue-500"
-                                            : "bg-gray-500/10 border-gray-500"
+                                    className={`p-4 rounded-lg border-l-4 cursor-pointer transition-all ${notification.status === "unread"
+                                        ? "bg-blue-500/10 border-blue-500"
+                                        : "bg-gray-500/10 border-gray-500"
                                         }`}
                                     onClick={() => {
                                         if (notification.status === "unread") {
@@ -164,9 +164,9 @@ export default function NotificationsPage() {
                                                 </p>
                                             )}
                                         </div>
-                                        <span className={`px-2 py-1 rounded text-xs whitespace-nowrap ml-2 ${ notification.status === "unread"
-                                                ? "bg-blue-500/30 text-blue-200"
-                                                : "bg-gray-500/30 text-gray-300"
+                                        <span className={`px-2 py-1 rounded text-xs whitespace-nowrap ml-2 ${notification.status === "unread"
+                                            ? "bg-blue-500/30 text-blue-200"
+                                            : "bg-gray-500/30 text-gray-300"
                                             }`}>
                                             {notification.status}
                                         </span>
@@ -192,80 +192,80 @@ function getNotificationTitle(type?: string): string {
     }
     return titles[type || "general"] || "📢 Notification"
 }
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        className="text-center py-12"
-                    >
+initial = {{ opacity: 0 }}
+animate = {{ opacity: 1 }}
+className = "text-center py-12"
+    >
                         <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-slate-400 border-t-blue-400" />
                         <p className="mt-4 text-slate-300">Loading notifications...</p>
-                    </motion.div>
+                    </motion.div >
                 ) : notifications.length === 0 ? (
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className="glass p-12 text-center rounded-lg"
-                    >
-                        <p className="text-xl text-slate-300">No notifications yet</p>
-                        <p className="text-sm text-slate-400 mt-2">
-                            When you get notifications, they&apos;ll appear here
-                        </p>
-                    </motion.div>
-                ) : (
-                    notifications.map((notification, index) => (
-                        <motion.div
-                            key={notification.id}
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: index * 0.05 }}
-                            className={`glass p-4 rounded-lg flex items-start justify-between gap-4 transition-colors ${notification.status === "unread"
-                                    ? "bg-blue-500/10 border-l-4 border-blue-500"
-                                    : "bg-white/5"
-                                }`}
-                        >
-                            <div className="flex-1">
-                                <div className="flex items-center gap-3 mb-1">
-                                    <p className="text-white font-medium">
-                                        {notification.message}
-                                    </p>
-                                    {notification.status === "unread" && (
-                                        <span className="inline-block h-2 w-2 rounded-full bg-blue-400" />
-                                    )}
-                                </div>
-                                {notification.created_at && (
-                                    <p className="text-xs text-slate-400">
-                                        {new Date(
-                                            notification.created_at
-                                        ).toLocaleDateString()}
-                                    </p>
-                                )}
-                            </div>
-
-                            <div className="flex gap-2">
-                                {notification.status === "unread" && (
-                                    <motion.button
-                                        whileHover={{ scale: 1.05 }}
-                                        onClick={() =>
-                                            markAsRead(notification.id)
-                                        }
-                                        className="px-3 py-1 text-xs bg-blue-500 hover:bg-blue-600 rounded text-white transition-colors"
-                                    >
-                                        Mark Read
-                                    </motion.button>
-                                )}
-                                <motion.button
-                                    whileHover={{ scale: 1.05 }}
-                                    onClick={() =>
-                                        deleteNotification(notification.id)
-                                    }
-                                    className="px-3 py-1 text-xs bg-red-500/20 hover:bg-red-500/30 text-red-200 rounded transition-colors"
-                                >
-                                    Delete
-                                </motion.button>
-                            </div>
-                        </motion.div>
-                    ))
+    <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="glass p-12 text-center rounded-lg"
+    >
+        <p className="text-xl text-slate-300">No notifications yet</p>
+        <p className="text-sm text-slate-400 mt-2">
+            When you get notifications, they&apos;ll appear here
+        </p>
+    </motion.div>
+) : (
+    notifications.map((notification, index) => (
+        <motion.div
+            key={notification.id}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: index * 0.05 }}
+            className={`glass p-4 rounded-lg flex items-start justify-between gap-4 transition-colors ${notification.status === "unread"
+                ? "bg-blue-500/10 border-l-4 border-blue-500"
+                : "bg-white/5"
+                }`}
+        >
+            <div className="flex-1">
+                <div className="flex items-center gap-3 mb-1">
+                    <p className="text-white font-medium">
+                        {notification.message}
+                    </p>
+                    {notification.status === "unread" && (
+                        <span className="inline-block h-2 w-2 rounded-full bg-blue-400" />
+                    )}
+                </div>
+                {notification.created_at && (
+                    <p className="text-xs text-slate-400">
+                        {new Date(
+                            notification.created_at
+                        ).toLocaleDateString()}
+                    </p>
                 )}
             </div>
+
+            <div className="flex gap-2">
+                {notification.status === "unread" && (
+                    <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        onClick={() =>
+                            markAsRead(notification.id)
+                        }
+                        className="px-3 py-1 text-xs bg-blue-500 hover:bg-blue-600 rounded text-white transition-colors"
+                    >
+                        Mark Read
+                    </motion.button>
+                )}
+                <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    onClick={() =>
+                        deleteNotification(notification.id)
+                    }
+                    className="px-3 py-1 text-xs bg-red-500/20 hover:bg-red-500/30 text-red-200 rounded transition-colors"
+                >
+                    Delete
+                </motion.button>
+            </div>
         </motion.div>
+    ))
+)}
+            </div >
+        </motion.div >
     )
 }
