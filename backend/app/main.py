@@ -25,23 +25,23 @@ FRONTEND_URLS = os.getenv("FRONTEND_URLS", "http://localhost:3000").split(",")
 async def lifespan(app: FastAPI):
     import time
 
-    print("🚀 Starting RentWise backend...")
+    print("Starting RentWise backend...")
 
     # Try DB connection (retry system)
     for i in range(5):
         try:
             Base.metadata.create_all(bind=engine)
-            print("✅ Database connected")
+            print("Database connected")
             break
         except Exception as exc:
-            print(f"⏳ DB not ready... retry {i+1}")
+            print(f"DB not ready... retry {i+1}")
             time.sleep(3)
     else:
-        print("⚠️ Running without DB (temporary)")
+        print("Running without DB (temporary)")
 
     yield
 
-    print("🛑 Shutting down...")
+    print("Shutting down...")
 
 
 app = FastAPI(

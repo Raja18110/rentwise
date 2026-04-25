@@ -24,10 +24,10 @@ export default function DashboardLayout({ children }: any) {
         const isTenant = user.role === "tenant"
 
         // Landlord-only pages
-        const landlordOnlyPaths = ["/dashboard/lease", "/dashboard/property"]
+        const landlordOnlyPaths = ["/dashboard/property"]
 
         // Tenant-only pages
-        const tenantOnlyPaths = ["/dashboard/chat", "/dashboard/payments", "/dashboard/requests"]
+        const tenantOnlyPaths = ["/dashboard/payments", "/dashboard/requests"]
 
         // Check if current path requires specific role
         if (landlordOnlyPaths.some(path => pathname.startsWith(path)) && !isLandlord) {

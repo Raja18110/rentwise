@@ -14,14 +14,19 @@ export default function Lease() {
         const searchParams = new URLSearchParams(window.location.search)
         const propertyId = searchParams.get('propertyId')
         const name = searchParams.get('name')
-        const location = searchParams.get('location')
         const rent = searchParams.get('rent')
+        const landlordId = searchParams.get('landlordId')
+        const landlordEmail = searchParams.get('landlordEmail')
 
         if (name && rent) {
             setData({
+                property_id: propertyId ? Number(propertyId) : undefined,
+                landlord_id: landlordId ? Number(landlordId) : undefined,
+                tenant_id: user?.id,
                 property_name: name,
                 rent_amount: rent,
                 tenant_email: user?.email || '',
+                landlord_email: landlordEmail || '',
                 frequency: 'monthly',
                 deposit: '',
                 start_date: '',
@@ -42,7 +47,8 @@ export default function Lease() {
             const payload = {
                 ...data,
                 rent_amount: parseFloat(data.rent_amount),
-                deposit: parseFloat(data.deposit)
+                deposit: parseFloat(data.deposit),
+                tenant_id: user?.id,
             }
             await axios.post(`${apiUrl}/lease/`, payload)
             alert("Lease created successfully!")

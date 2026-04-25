@@ -7,6 +7,9 @@ from app.services.notification import create_notification, get_notifications, ma
 class NotificationSchema(BaseModel):
     email: EmailStr
     message: str = Field(..., min_length=1, max_length=1000)
+    title: str | None = None
+    notification_type: str = "general"
+    related_id: int | None = None
 
 router = APIRouter(prefix="/notification", tags=["Notifications"])
 
@@ -15,7 +18,14 @@ router = APIRouter(prefix="/notification", tags=["Notifications"])
 def create(data: NotificationSchema, db: Session = Depends(get_db)):
     """Create a new notification for a user"""
     try:
-        notification = create_notification(db, data.email, data.message)
+        notification = create_notification(
+            db,
+            data.email,
+            data.message,
+            title=data.title,
+            notification_type=data.notification_type,
+            related_id=data.related_id,
+        )
         
         if not notification:
             raise HTTPException(

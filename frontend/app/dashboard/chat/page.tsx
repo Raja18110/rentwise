@@ -22,6 +22,7 @@ export default function Chat() {
     const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null)
     const [user, setUser] = useState<any>(null)
     const [activeUsers, setActiveUsers] = useState(0)
+    const [chatContext, setChatContext] = useState<any>({})
 
     // Auto-scroll to bottom
     const scrollToBottom = () => {
@@ -40,20 +41,27 @@ export default function Chat() {
             return
         }
         setUser(currentUser)
+        const params = new URLSearchParams(window.location.search)
+        setChatContext({
+            leaseId: params.get("leaseId") || "global",
+            landlordEmail: params.get("landlordEmail") || "",
+            tenantEmail: params.get("tenantEmail") || "",
+        })
     }, [])
 
     // Connect to WebSocket
     useEffect(() => {
-        if (!user) return
+        if (!user || !chatContext.leaseId) return
 
         const connectWebSocket = () => {
             try {
                 setConnecting(true)
-                const apiUrl = (
-                    process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
-                ).replace("http", "wss")
+                const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
+                const wsUrl = apiUrl.startsWith("https://")
+                    ? apiUrl.replace("https://", "wss://")
+                    : apiUrl.replace("http://", "ws://")
 
-                const socket = new WebSocket(`${apiUrl}/wss`)
+                const socket = new WebSocket(`${wsUrl}/wss?leaseId=${encodeURIComponent(chatContext.leaseId || "global")}`)
 
                 socket.onopen = () => {
                     console.log("✅ WebSocket connected")
@@ -67,6 +75,7 @@ export default function Chat() {
                             type: "user_joined",
                             user: user.username || user.email,
                             content: `${user.username || user.email} joined the chat`,
+                            leaseId: chatContext.leaseId,
                         })
                     )
                 }
@@ -126,7 +135,7 @@ export default function Chat() {
                 ws.close()
             }
         }
-    }, [user])
+    }, [user, chatContext.leaseId, chatContext.landlordEmail, chatContext.tenantEmail])
 
     const sendMessage = () => {
         if (!msg.trim()) {
@@ -145,6 +154,8 @@ export default function Chat() {
                     type: "message",
                     content: msg.trim(),
                     user: user.username || user.email,
+                    leaseId: chatContext.leaseId,
+                    recipientEmail: chatContext.landlordEmail || chatContext.tenantEmail,
                 })
             )
             setMsg("")

@@ -1,13 +1,17 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
-from app.db import get_db
-from app.schemas.lease import LeaseSchema, LeaseUpdateSchema
-from app.services.lease_service import create_lease, get_all_leases, update_lease_status
-from app.models.lease import Lease
 from pydantic import BaseModel
+from sqlalchemy.orm import Session
+
+from app.db import get_db
+from app.models.lease import Lease
+from app.schemas.lease import LeaseSchema, LeaseUpdateSchema
+from app.services.lease_service import create_lease, get_all_leases
+from app.services.notification import create_notification
+
 
 class LeaseStatusUpdate(BaseModel):
     status: str
+
 
 router = APIRouter(prefix="/lease", tags=["Leases"])
 
@@ -19,13 +23,13 @@ def create(data: LeaseSchema, db: Session = Depends(get_db)):
         return {
             "success": True,
             "message": "Lease created successfully",
-            "data": lease
+            "data": lease,
         }
     except Exception as e:
         print(f"Create lease error: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to create lease"
+            detail="Failed to create lease",
         )
 
 
@@ -36,13 +40,59 @@ def get_all(db: Session = Depends(get_db)):
         return {
             "success": True,
             "data": leases,
-            "count": len(leases) if leases else 0
+            "count": len(leases) if leases else 0,
         }
     except Exception as e:
         print(f"Get leases error: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to retrieve leases"
+            detail="Failed to retrieve leases",
+        )
+
+
+@router.get("/tenant/{tenant_email}", summary="Get leases by tenant email")
+def get_tenant_leases(tenant_email: str, db: Session = Depends(get_db)):
+    """Get all leases for a specific tenant."""
+    try:
+        leases = (
+            db.query(Lease)
+            .filter(Lease.tenant_email == tenant_email)
+            .order_by(Lease.created_at.desc())
+            .all()
+        )
+        return {
+            "success": True,
+            "data": leases,
+            "count": len(leases) if leases else 0,
+        }
+    except Exception as e:
+        print(f"Get tenant leases error: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to retrieve tenant leases",
+        )
+
+
+@router.get("/landlord/{landlord_email}", summary="Get leases by landlord email")
+def get_landlord_leases(landlord_email: str, db: Session = Depends(get_db)):
+    """Get all leases for a specific landlord."""
+    try:
+        leases = (
+            db.query(Lease)
+            .filter(Lease.landlord_email == landlord_email)
+            .order_by(Lease.created_at.desc())
+            .all()
+        )
+        return {
+            "success": True,
+            "data": leases,
+            "count": len(leases) if leases else 0,
+        }
+    except Exception as e:
+        print(f"Get landlord leases error: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to retrieve landlord leases",
         )
 
 
@@ -50,32 +100,47 @@ def get_all(db: Session = Depends(get_db)):
 def update_lease(
     lease_id: int,
     data: LeaseUpdateSchema,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
-    """Update lease status"""
+    """Update lease status."""
     try:
         lease = db.query(Lease).filter(Lease.id == lease_id).first()
-        
+
         if not lease:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Lease not found"
+                detail="Lease not found",
             )
-        
-        valid_statuses = ["active", "inactive", "terminated"]
-        if data.status not in valid_statuses:
+
+        valid_statuses = ["pending", "active", "expired", "terminated", "inactive"]
+        if data.status and data.status not in valid_statuses:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Invalid status. Must be one of: {', '.join(valid_statuses)}"
+                detail=f"Invalid status. Must be one of: {', '.join(valid_statuses)}",
             )
-        
-        lease.status = data.status
+
+        if data.status:
+            lease.status = data.status
+        if data.landlord_email:
+            lease.landlord_email = data.landlord_email
+
         db.commit()
-        
+        db.refresh(lease)
+
+        if lease.tenant_email:
+            create_notification(
+                db,
+                lease.tenant_email,
+                f"Your lease for {lease.property_name} is now {lease.status}.",
+                title="Lease updated",
+                notification_type="lease",
+                related_id=lease.id,
+            )
+
         return {
             "success": True,
             "message": "Lease updated successfully",
-            "data": lease
+            "data": lease,
         }
     except HTTPException:
         raise
@@ -83,25 +148,25 @@ def update_lease(
         print(f"Update lease error: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to update lease"
+            detail="Failed to update lease",
         )
 
 
 @router.get("/{lease_id}", summary="Get lease by ID")
 def get_lease(lease_id: int, db: Session = Depends(get_db)):
-    """Get a specific lease"""
+    """Get a specific lease."""
     try:
         lease = db.query(Lease).filter(Lease.id == lease_id).first()
-        
+
         if not lease:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Lease not found"
+                detail="Lease not found",
             )
-        
+
         return {
             "success": True,
-            "data": lease
+            "data": lease,
         }
     except HTTPException:
         raise
@@ -109,41 +174,5 @@ def get_lease(lease_id: int, db: Session = Depends(get_db)):
         print(f"Get lease error: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to retrieve lease"
-        )
-
-
-@router.get("/tenant/{tenant_email}", summary="Get leases by tenant email")
-def get_tenant_leases(tenant_email: str, db: Session = Depends(get_db)):
-    """Get all active leases for a specific tenant"""
-    try:
-        leases = db.query(Lease).filter(Lease.tenant_email == tenant_email).all()
-        return {
-            "success": True,
-            "data": leases,
-            "count": len(leases) if leases else 0
-        }
-    except Exception as e:
-        print(f"Get tenant leases error: {str(e)}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to retrieve tenant leases"
-        )
-
-
-@router.get("/landlord/{landlord_email}", summary="Get leases by landlord email")
-def get_landlord_leases(landlord_email: str, db: Session = Depends(get_db)):
-    """Get all leases for a specific landlord"""
-    try:
-        leases = db.query(Lease).filter(Lease.landlord_email == landlord_email).all()
-        return {
-            "success": True,
-            "data": leases,
-            "count": len(leases) if leases else 0
-        }
-    except Exception as e:
-        print(f"Get landlord leases error: {str(e)}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to retrieve landlord leases"
+            detail="Failed to retrieve lease",
         )

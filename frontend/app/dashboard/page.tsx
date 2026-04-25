@@ -59,10 +59,10 @@ function LandlordDashboard() {
             const landlordEmail = currentUser.email
 
             const [propertyRes, leaseRes, paymentRes, requestRes] = await Promise.all([
-                axios.get(`${API}/property/email/${landlordEmail}`),
-                axios.get(`${API}/lease/landlord/${landlordEmail}`),
+                axios.get(`${API}/property/landlord/${currentUser.id}`),
+                axios.get(`${API}/lease/landlord/${encodeURIComponent(landlordEmail)}`),
                 axios.get(`${API}/payment`),
-                axios.get(`${API}/request`)
+                axios.get(`${API}/request/landlord/${encodeURIComponent(landlordEmail)}`)
             ])
 
             const properties = propertyRes.data?.data || []
@@ -86,9 +86,7 @@ function LandlordDashboard() {
             }, 0)
             setRevenue(total)
 
-            // Filter requests for this landlord's properties
-            const landlordRequests = requests.filter((r: any) => r.landlord_email === landlordEmail)
-            setRequests(landlordRequests)
+            setRequests(requests)
         } catch (err) {
             console.error("Error fetching data:", err)
             setProperties([])
@@ -112,6 +110,10 @@ function LandlordDashboard() {
             console.error(err)
             alert("Failed to update lease status")
         }
+    }
+
+    const handleLeaseChat = (lease: any) => {
+        router.push(`/dashboard/chat?leaseId=${lease.id}&tenantEmail=${encodeURIComponent(lease.tenant_email || "")}`)
     }
 
     return (
@@ -154,22 +156,30 @@ function LandlordDashboard() {
                     <p className="text-gray-400">No leases yet</p>
                 ) : (
                     leases.map((l: any) => (
-                        <div key={l.id} className="glass p-4 mb-3 flex justify-between items-center">
+                        <div key={l.id} className="glass p-4 mb-3 flex justify-between items-center gap-4">
                             <div>
                                 <p className="font-bold">{l.property_name}</p>
                                 <p className="text-sm text-gray-400">{l.tenant_email}</p>
                                 <p className="text-sm">₹{l.rent_amount} ({l.frequency})</p>
                             </div>
-                            <select
-                                value={l.status}
-                                onChange={(e) => updateLeaseStatus(l.id, e.target.value)}
-                                className="input w-32"
-                            >
-                                <option value="pending">Pending</option>
-                                <option value="active">Active</option>
-                                <option value="expired">Expired</option>
-                                <option value="terminated">Terminated</option>
-                            </select>
+                            <div className="flex items-center gap-2">
+                                <button
+                                    onClick={() => handleLeaseChat(l)}
+                                    className="btn-secondary text-sm px-3 py-1"
+                                >
+                                    Chat
+                                </button>
+                                <select
+                                    value={l.status}
+                                    onChange={(e) => updateLeaseStatus(l.id, e.target.value)}
+                                    className="input w-32"
+                                >
+                                    <option value="pending">Pending</option>
+                                    <option value="active">Active</option>
+                                    <option value="expired">Expired</option>
+                                    <option value="terminated">Terminated</option>
+                                </select>
+                            </div>
                         </div>
                     ))
                 )}
@@ -216,7 +226,7 @@ function TenantDashboard({ user }: any) {
             setLoading(true)
             const [propertyRes, leaseRes] = await Promise.all([
                 axios.get(`${API}/property`),
-                axios.get(`${API}/lease/tenant/${user.email}`)
+                axios.get(`${API}/lease/tenant/${encodeURIComponent(user.email)}`)
             ])
 
             setProperties(propertyRes.data?.data || propertyRes.data || [])
@@ -232,7 +242,7 @@ function TenantDashboard({ user }: any) {
 
     const handleLease = (property: any) => {
         // Navigate to lease page with property details
-        router.push(`/dashboard/lease?propertyId=${property.id}&name=${encodeURIComponent(property.name)}&location=${encodeURIComponent(property.location)}&rent=${property.rent}&landlordId=${property.landlord_id}`)
+        router.push(`/dashboard/lease?propertyId=${property.id}&name=${encodeURIComponent(property.name)}&location=${encodeURIComponent(property.location)}&rent=${property.rent}&landlordId=${property.landlord_id}&landlordEmail=${encodeURIComponent(property.landlord_email || "")}`)
     }
 
     const handleChat = (lease: any) => {

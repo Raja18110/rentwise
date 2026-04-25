@@ -25,6 +25,15 @@ def send_otp_email(recipient_email: str, otp: str) -> bool:
         True if email sent successfully, False otherwise
     """
     try:
+        if (
+            not SENDER_EMAIL
+            or not SENDER_PASSWORD
+            or SENDER_EMAIL == "your_email@gmail.com"
+            or SENDER_PASSWORD == "your_app_password"
+        ):
+            print("Email is not configured. Set SENDER_EMAIL and SENDER_PASSWORD in backend/.env.")
+            return False
+
         # Create message
         message = MIMEMultipart("alternative")
         message["Subject"] = "Your RentWise OTP Verification Code"

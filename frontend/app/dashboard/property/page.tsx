@@ -36,10 +36,12 @@ export default function PropertyPage() {
         try {
             await axios.post(`${API}/property`, {
                 ...data,
-                landlord_id: user.id
+                landlord_id: user.id,
+                landlord_email: user.email,
             })
             alert("Property Added Successfully!")
             setData({})
+            fetchProperties()
         } catch (err) {
             console.error(err)
             alert("Failed to add property")

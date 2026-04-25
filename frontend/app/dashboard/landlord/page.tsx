@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import axios from "axios"
 import API from "@/utils/api"
 import { motion } from "framer-motion"
+import { getUser } from "@/utils/auth"
 
 export default function LandlordPage() {
     const [properties, setProperties] = useState<any[]>([])
@@ -17,11 +18,13 @@ export default function LandlordPage() {
 
     const fetchData = async () => {
         try {
+            const user = getUser()
+            const landlordEmail = user?.email || ""
             const [propertyRes, leaseRes, paymentRes, requestRes] = await Promise.all([
-                axios.get(`${API}/property`),
-                axios.get(`${API}/lease`),
+                axios.get(`${API}/property/landlord/${user?.id}`),
+                axios.get(`${API}/lease/landlord/${encodeURIComponent(landlordEmail)}`),
                 axios.get(`${API}/payment`),
-                axios.get(`${API}/request`)
+                axios.get(`${API}/request/landlord/${encodeURIComponent(landlordEmail)}`)
             ])
 
             setProperties(propertyRes.data.data || [])
