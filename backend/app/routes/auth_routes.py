@@ -104,11 +104,20 @@ def login(data: LoginSchema, db: Session = Depends(get_db)):
 @router.post("/send-otp", summary="Send OTP to email")
 def send_otp(request: OTPRequest, db: Session = Depends(get_db)):
     try:
-        generate_otp(request.email)
-        return {
-            "success": True,
-            "msg": "OTP sent successfully"
-        }
+        result = generate_otp(request.email)
+        
+        if result["success"]:
+            return {
+                "success": True,
+                "message": result["message"]
+            }
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=result["message"]
+            )
+    except HTTPException:
+        raise
     except Exception as e:
         print(f"OTP send error: {str(e)}")
         raise HTTPException(

@@ -111,3 +111,39 @@ def get_lease(lease_id: int, db: Session = Depends(get_db)):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to retrieve lease"
         )
+
+
+@router.get("/tenant/{tenant_email}", summary="Get leases by tenant email")
+def get_tenant_leases(tenant_email: str, db: Session = Depends(get_db)):
+    """Get all active leases for a specific tenant"""
+    try:
+        leases = db.query(Lease).filter(Lease.tenant_email == tenant_email).all()
+        return {
+            "success": True,
+            "data": leases,
+            "count": len(leases) if leases else 0
+        }
+    except Exception as e:
+        print(f"Get tenant leases error: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to retrieve tenant leases"
+        )
+
+
+@router.get("/landlord/{landlord_email}", summary="Get leases by landlord email")
+def get_landlord_leases(landlord_email: str, db: Session = Depends(get_db)):
+    """Get all leases for a specific landlord"""
+    try:
+        leases = db.query(Lease).filter(Lease.landlord_email == landlord_email).all()
+        return {
+            "success": True,
+            "data": leases,
+            "count": len(leases) if leases else 0
+        }
+    except Exception as e:
+        print(f"Get landlord leases error: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to retrieve landlord leases"
+        )

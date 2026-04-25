@@ -10,13 +10,16 @@ import toast from "react-hot-toast"
 interface Notification {
     id: number
     message: string
+    title?: string
     status: "read" | "unread"
     created_at?: string
+    notification_type?: string
 }
 
 export default function NotificationsPage() {
     const [notifications, setNotifications] = useState<Notification[]>([])
     const [loading, setLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null)
     const [user, setUser] = useState<any>(null)
     const router = useRouter()
 
@@ -35,11 +38,20 @@ export default function NotificationsPage() {
     const fetchNotifications = async (email: string) => {
         try {
             setLoading(true)
-            const res = await axios.get(`${apiUrl}/notification/${email}`)
-            setNotifications(res.data || [])
-        } catch (error) {
+            setError(null)
+            const res = await axios.get(`${apiUrl}/notification/${encodeURIComponent(email)}`)
+            
+            if (res.data?.data) {
+                setNotifications(res.data.data)
+            } else if (Array.isArray(res.data)) {
+                setNotifications(res.data)
+            } else {
+                setNotifications([])
+            }
+        } catch (error: any) {
             console.error("Error fetching notifications:", error)
-            toast.error("Failed to fetch notifications")
+            setError(error?.response?.data?.detail || "Failed to fetch notifications")
+            toast.error("Failed to load notifications")
             setNotifications([])
         } finally {
             setLoading(false)
@@ -81,59 +93,105 @@ export default function NotificationsPage() {
         }
     }
 
-    const deleteNotification = async (notificationId: number) => {
-        try {
-            setNotifications((prev) =>
-                prev.filter((n) => n.id !== notificationId)
-            )
-            toast.success("Notification deleted")
-        } catch (error) {
-            console.error("Error deleting notification:", error)
-            toast.error("Failed to delete notification")
-        }
+    if (loading) {
+        return (
+            <div className="flex min-h-screen items-center justify-center">
+                <div>Loading notifications...</div>
+            </div>
+        )
     }
 
-    const unreadCount = notifications.filter(
-        (n) => n.status === "unread"
-    ).length
-
     return (
-        <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="max-w-2xl mx-auto"
-        >
-            {/* Header */}
-            <div className="mb-8">
-                <h1 className="text-4xl font-bold mb-2">Notifications</h1>
-                <p className="text-slate-300">
-                    {unreadCount > 0 ? (
-                        <>
-                            You have <span className="text-blue-400 font-semibold">{unreadCount}</span> unread
-                            notification{unreadCount > 1 ? "s" : ""}
-                        </>
-                    ) : (
-                        "All caught up!"
+        <div className="p-6 max-w-2xl mx-auto">
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="space-y-4"
+            >
+                <div className="glass p-6 rounded-3xl">
+                    <div className="flex justify-between items-center mb-4">
+                        <h1 className="text-2xl font-bold">🔔 Notifications</h1>
+                        {notifications.length > 0 && (
+                            <button
+                                onClick={markAllAsRead}
+                                className="btn-secondary text-sm"
+                            >
+                                Mark all as read
+                            </button>
+                        )}
+                    </div>
+
+                    {error && (
+                        <div className="bg-red-500/20 border border-red-500 text-red-300 p-3 rounded mb-4">
+                            {error}
+                        </div>
                     )}
-                </p>
-            </div>
 
-            {/* Mark All as Read Button */}
-            {unreadCount > 0 && (
-                <motion.button
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    onClick={markAllAsRead}
-                    className="mb-6 px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg text-sm font-medium transition-colors"
-                >
-                    Mark All as Read
-                </motion.button>
-            )}
+                    {notifications.length === 0 ? (
+                        <div className="text-center py-12">
+                            <p className="text-gray-400 text-lg">No notifications yet</p>
+                            <p className="text-gray-500 text-sm mt-2">You'll see notifications about payments, leases, and maintenance requests here.</p>
+                        </div>
+                    ) : (
+                        <div className="space-y-3">
+                            {notifications.map((notification, index) => (
+                                <motion.div
+                                    key={notification.id}
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: index * 0.05 }}
+                                    className={`p-4 rounded-lg border-l-4 cursor-pointer transition-all ${ notification.status === "unread"
+                                            ? "bg-blue-500/10 border-blue-500"
+                                            : "bg-gray-500/10 border-gray-500"
+                                        }`}
+                                    onClick={() => {
+                                        if (notification.status === "unread") {
+                                            markAsRead(notification.id)
+                                        }
+                                    }}
+                                >
+                                    <div className="flex justify-between items-start">
+                                        <div className="flex-1">
+                                            <p className="font-semibold">
+                                                {notification.title || getNotificationTitle(notification.notification_type)}
+                                            </p>
+                                            <p className="text-sm text-gray-400 mt-1">
+                                                {notification.message}
+                                            </p>
+                                            {notification.created_at && (
+                                                <p className="text-xs text-gray-500 mt-2">
+                                                    {new Date(notification.created_at).toLocaleString()}
+                                                </p>
+                                            )}
+                                        </div>
+                                        <span className={`px-2 py-1 rounded text-xs whitespace-nowrap ml-2 ${ notification.status === "unread"
+                                                ? "bg-blue-500/30 text-blue-200"
+                                                : "bg-gray-500/30 text-gray-300"
+                                            }`}>
+                                            {notification.status}
+                                        </span>
+                                    </div>
+                                </motion.div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            </motion.div>
+        </div>
+    )
+}
 
-            {/* Notifications List */}
-            <div className="space-y-4">
-                {loading ? (
-                    <motion.div
+function getNotificationTitle(type?: string): string {
+    const titles: Record<string, string> = {
+        payment: "💳 Payment Notification",
+        lease: "📋 Lease Notification",
+        request: "🔧 Maintenance Request",
+        message: "💬 New Message",
+        system: "⚙️ System Notification",
+        general: "📢 Notification",
+    }
+    return titles[type || "general"] || "📢 Notification"
+}
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         className="text-center py-12"

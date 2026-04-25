@@ -18,6 +18,7 @@ export default function Sidebar() {
             { name: "Add Property", path: "/dashboard/property", icon: "🏠" }
         ] : []),
         ...(isTenant ? [
+            { name: "Lease", path: "/dashboard/lease", icon: "📄" },
             { name: "Chat", path: "/dashboard/chat", icon: "💬" },
             { name: "Payments", path: "/dashboard/payments", icon: "💳" },
             { name: "Requests", path: "/dashboard/requests", icon: "✉️" }
@@ -55,7 +56,7 @@ export default function Sidebar() {
 
             {/* Footer */}
             <p className="text-sm text-gray-400 mt-10">
-                © RentWise 2024
+                © RentWise 2026
             </p>
 
         </div>

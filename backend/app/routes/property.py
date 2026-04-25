@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from app.db import get_db
 from app.models.property import Property
@@ -9,11 +9,18 @@ class PropertyCreate(BaseModel):
     location: str = Field(..., min_length=1, max_length=255)
     rent: float = Field(..., gt=0)
     landlord_id: int
+    landlord_email: str = None
+    description: str = None
+    bhk: str = None
+    area: str = None
+    furnished: str = "unfurnished"
 
 class PropertyUpdate(BaseModel):
     name: str = None
     location: str = None
     rent: float = None
+    description: str = None
+    status: str = None
 
 router = APIRouter(prefix="/property", tags=["Properties"])
 
@@ -42,7 +49,12 @@ def create_property(data: PropertyCreate, db: Session = Depends(get_db)):
             name=data.name.strip(),
             location=data.location.strip(),
             rent=data.rent,
-            landlord_id=data.landlord_id
+            landlord_id=data.landlord_id,
+            landlord_email=data.landlord_email,
+            description=data.description,
+            bhk=data.bhk,
+            area=data.area,
+            furnished=data.furnished
         )
         db.add(prop)
         db.commit()
@@ -151,4 +163,40 @@ def delete_property(property_id: int, db: Session = Depends(get_db)):
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to delete property"
+        )
+
+
+@router.get("/landlord/{landlord_id}", summary="Get properties by landlord ID")
+def get_landlord_properties(landlord_id: int, db: Session = Depends(get_db)):
+    """Get all properties owned by a specific landlord"""
+    try:
+        properties = db.query(Property).filter(Property.landlord_id == landlord_id).all()
+        return {
+            "success": True,
+            "data": properties,
+            "count": len(properties) if properties else 0
+        }
+    except Exception as e:
+        print(f"Get landlord properties error: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to retrieve landlord properties"
+        )
+
+
+@router.get("/email/{email}", summary="Get properties by landlord email")
+def get_properties_by_email(email: str, db: Session = Depends(get_db)):
+    """Get all properties owned by a landlord with specific email"""
+    try:
+        properties = db.query(Property).filter(Property.landlord_email == email).all()
+        return {
+            "success": True,
+            "data": properties,
+            "count": len(properties) if properties else 0
+        }
+    except Exception as e:
+        print(f"Get properties by email error: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to retrieve properties"
         )
