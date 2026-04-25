@@ -28,7 +28,7 @@ function loadRazorpay(): Promise<void> {
 }
 
 export default function Payments() {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
+    const apiUrl = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000").replace(/\/$/, "")
     const [loading, setLoading] = useState(false)
     const [leases, setLeases] = useState<any[]>([])
     const [selectedLeaseId, setSelectedLeaseId] = useState("")

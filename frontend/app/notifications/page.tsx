@@ -22,7 +22,7 @@ export default function NotificationsPage() {
     const [error, setError] = useState<string | null>(null)
     const router = useRouter()
 
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
+    const apiUrl = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000").replace(/\/$/, "")
 
     useEffect(() => {
         const currentUser = getUser()

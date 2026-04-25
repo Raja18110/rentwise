@@ -16,7 +16,7 @@ export default function Navbar() {
         const user = getUser()
         if (!user) return
 
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
+        const apiUrl = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000").replace(/\/$/, "")
 
         // Fetch unread notification count
         axios

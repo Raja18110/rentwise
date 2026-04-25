@@ -20,6 +20,8 @@ export default function Chat() {
     const [connecting, setConnecting] = useState(false)
     const messagesEndRef = useRef<HTMLDivElement>(null)
     const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+    const socketRef = useRef<WebSocket | null>(null)
+    const shouldReconnectRef = useRef(true)
     const [user, setUser] = useState<any>(null)
     const [activeUsers, setActiveUsers] = useState(0)
     const [chatContext, setChatContext] = useState<any>({})
@@ -53,10 +55,12 @@ export default function Chat() {
     useEffect(() => {
         if (!user || !chatContext.leaseId) return
 
+        shouldReconnectRef.current = true
+
         const connectWebSocket = () => {
             try {
                 setConnecting(true)
-                const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
+                const apiUrl = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000").replace(/\/$/, "")
                 const wsUrl = apiUrl.startsWith("https://")
                     ? apiUrl.replace("https://", "wss://")
                     : apiUrl.replace("http://", "ws://")
@@ -107,7 +111,7 @@ export default function Chat() {
                     setConnecting(false)
 
                     // Reconnect after 3 seconds
-                    if (!reconnectTimeoutRef.current) {
+                    if (shouldReconnectRef.current && !reconnectTimeoutRef.current) {
                         toast.error("Disconnected. Reconnecting...")
                         reconnectTimeoutRef.current = setTimeout(() => {
                             reconnectTimeoutRef.current = null
@@ -117,6 +121,7 @@ export default function Chat() {
                 }
 
                 setWs(socket)
+                socketRef.current = socket
             } catch (error) {
                 console.error("Error connecting to WebSocket:", error)
                 setConnecting(false)
@@ -128,12 +133,11 @@ export default function Chat() {
 
         // Cleanup
         return () => {
+            shouldReconnectRef.current = false
             if (reconnectTimeoutRef.current) {
                 clearTimeout(reconnectTimeoutRef.current)
             }
-            if (ws) {
-                ws.close()
-            }
+            socketRef.current?.close()
         }
     }, [user, chatContext.leaseId, chatContext.landlordEmail, chatContext.tenantEmail])
 

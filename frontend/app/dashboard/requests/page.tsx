@@ -5,7 +5,7 @@ import axios from "axios"
 import { getUser } from "@/utils/auth"
 
 export default function Requests() {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
+    const apiUrl = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000").replace(/\/$/, "")
     const [user, setUser] = useState<any>(null)
     const [leases, setLeases] = useState<any[]>([])
     const [selectedLeaseId, setSelectedLeaseId] = useState("")

@@ -13,7 +13,7 @@ export default function LoginPage() {
     const [googleRole, setGoogleRole] = useState("tenant")
     const [loading, setLoading] = useState(false)
     const router = useRouter()
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
+    const apiUrl = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000").replace(/\/$/, "")
 
     const requestNotificationPermission = async () => {
         if (typeof window === "undefined" || !("Notification" in window)) return

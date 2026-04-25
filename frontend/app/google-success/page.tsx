@@ -20,7 +20,7 @@ export default function GoogleSuccess() {
 
         const loginToBackend = async () => {
             try {
-                const apiUrl = process.env.NEXT_PUBLIC_API_URL
+                const apiUrl = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000").replace(/\/$/, "")
                 const res = await axios.post(`${apiUrl}/auth/google`, {
                     token: credential,
                 })

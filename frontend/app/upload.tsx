@@ -9,7 +9,7 @@ export default function Upload() {
     const [loading, setLoading] = useState(false)
     const [uploadedUrl, setUploadedUrl] = useState<string>("")
 
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
+    const apiUrl = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000").replace(/\/$/, "")
 
     const handleUpload = async (selectedFile: File) => {
         try {
